@@ -1,0 +1,59 @@
+<ion-content class="ion-padding">
+  <div class="flex justify-between" style="margin-top: 60px;">
+    <div><img src="assets/icon/GSCHU-Logo.webp" class="h-full object-cover" style="height: 30px;"></div>
+    <div class="text-bold text-rdp" style="font-size:24px;" routerLink="/daftar">Daftar</div>
+  </div>
+
+  <h2 class="text-bold" style="font-size: 40px; margin: 40px 0px">Masuk Ke <br>Akun</h2>
+  <form [formGroup]="masukForm" (submit)="masuk()">
+    <ion-list class="mb-0">
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl">
+        <ion-icon slot="start" name="mail" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input formControlName="email" class="-mb-2"></ion-input>
+      </ion-item>
+      <ion-item fill="outline" class="item-rounded-xl">
+        <ion-icon slot="start" name="key" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating">Kata Sandi</ion-label>
+        <ion-input formControlName="sandi" class="-mb-2" [type]="showSandi? 'text' : 'password'"></ion-input>
+        <ion-icon slot="end" color="medium" [name]="showSandi? 'eye-off' : 'eye'"
+          (click)="showSandi = !showSandi"></ion-icon>
+      </ion-item>
+    </ion-list>
+  
+    <div class="flex items-center justify-between gap-3 ion-margin-bottom">
+      <!-- <div class="flex items-center">
+        <div class="flex items-center"><ion-checkbox checked="true"></ion-checkbox></div>
+        <div class="pl-2 text-medium text-bold">Ingat Saya</div>
+      </div> -->
+      <div class="flex-1">
+        <small *ngIf="masukForm.errors?.emailsandiInvalid" class="text-danger">Email/Kata Sandi tidak sesuai</small>
+      </div>
+      <div class="flex-shrink-0">
+        <small class="text-primary" (click)="lupasandi()">Lupa Kata Sandi?</small>
+      </div>
+    </div>
+    <button type="submit"
+      [class.opacity-50]="masukForm.invalid"
+      class="w-full ion-margin-bottom bg-rdp text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative">
+      <h5  [class.opacity-0]="isLoading" class="ion-no-margin text-bold">Masuk</h5>
+      <ion-spinner [class.opacity-0]="!isLoading" color="light" class="absolute"></ion-spinner>
+    </button>
+  </form>
+  <div class="w-full text-center"><small>Butuh bantuan? <a href="https://wa.me/6282234894743" target="_blank">Hubungu kami sekarang</a></small></div>
+  <!-- <div class=" ion-margin-bottom w-full flex items-center justify-center gap-3">
+    <div class="w-full">
+      <hr style="border-top: 2px solid var(--ion-color-light) !important; width: 100%;">
+    </div>
+    <div class="text-medium text-bold text-center bg-background">Atau</div>
+    <div class="w-full">
+      <hr style="border-top: 2px solid var(--ion-color-light) !important; width: 100%;">
+    </div>
+  </div>
+
+  <div class="w-full text-medium flex items-center justify-center border border-solid rounded-xl ion-padding relative">
+    <img src="assets/google-logo.png" class="mr-4" style="height: 22px;">
+    <div class="ion-no-margin"> Masuk dengan Google</div>
+  </div> -->
+
+</ion-content>

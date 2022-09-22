@@ -1,0 +1,374 @@
+<ion-content [class.content-no-scroll]="!isDesktop" class="relative">
+<!-- <ion-content class="relative"> -->
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div class="absolute w-full bg-header"
+    style="height: 240px; z-index: -1; border-radius: 0 0 50% 50%; width: 150vw; left: -25vw; top: 0;"></div>
+  <!-- <div class="absolute w-full" style="height: 150vw;width: 180px;z-index: -1;border-radius: 150vw;width: 150vw;left: 45vw;top: -110vw;background: white;opacity: 0.1;"></div> -->
+  <!-- <div class="absolute w-full" style="height: 150vw;width: 180px;z-index: -1;border-radius: 150vw;width: 150vw;left: 15vw;top: -110vw;background: white;opacity: 0.1;"></div> -->
+
+
+  <div class="ion-padding">
+    <div class="bg-none flex items-center gap-3 ion-margin-bottom">
+      <div class="flex-1 flex items-center">
+        <img src="assets/logo.png" class="h-full object-cover" style="height: 20px;">
+      </div>
+      <!-- <ion-icon name="print" style="font-size: 22pt; margin-bottom: -3px;"></ion-icon> -->
+      <ion-icon *ngIf="user?.admin" routerLink="/pengaturan" name="settings" style="font-size: 20pt;"></ion-icon>
+      <div routerLink="/notifikasi" class="relative flex">
+        <ion-icon name="notifications" style="font-size: 20pt;"></ion-icon>
+        <ion-badge *ngIf="totalNotifikasi" mode="ios" color="primary" class="absolute"
+          style="right: 50%; top: 2px; --padding-bottom: 1px; font-size: 8pt; --padding-start: 5px; --padding-end: 5px;">
+          {{totalNotifikasi}}</ion-badge>
+      </div>
+    </div>
+
+
+    <div class="ion-margin-bottom">
+      <div class="bg-background drop-shadow-md ion-padding rounded-xl flex items-center gap-3">
+        <div class="bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+          style="height: 50px; width: 50px;" routerLink="/akun">
+          <img *ngIf="user?.foto; else noFoto" [src]="user?.foto" class="h-full w-full object-cover">
+          <ng-template #noFoto>
+            <b style="font-size: 16pt;">{{user?.inisial}}</b>
+          </ng-template>
+        </div>
+        <div class="flex-1" routerLink="/akun">
+          <h5 class="ion-no-margin ion-text-capitalize"><b>{{user?.namaLengkap}}</b></h5>
+          <div class="text-medium">{{totalPermintaanTerakhir}} Permintaan</div>
+        </div>
+        <div class="flex ion-no-margin" style="font-size: 20pt; margin-right: -8px;" (click)="pilihanModal.present()">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </div>
+      </div>
+    </div>
+    <div class="ion-padding-bottom">
+      <h4 class="text-bold">Pilih Permintaan Baru</h4>
+      <div class="grid grid-cols-2 gap-5">
+        <!-- <ng-container *ngFor="let kat of kategori; trackBy: trackByFn">
+          <div [ngClass]="'bg-' + kat.kode" class="text-white rounded-lg p-2 drop-shadow-md flex items-center"
+            [routerLink]="'/form/' + kat.kode">
+            <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+              <div class="ion-no-margin flex justify-center">
+                <img [src]="'assets/icon/' + kat.kode + '.png'" style="max-width:28px; max-height: 28px;">
+              </div>
+            </div>
+            <small class="leading-3" style="white-space: break-spaces;">{{kat.nama}}</small>
+          </div>
+        </ng-container> -->
+
+        <div class="bg-rdp text-white rounded-lg p-2 drop-shadow-md flex items-center" 
+          routerLink="/form/rdp">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/rdp.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Perbaikan RDP & Fasum</small>
+        </div>
+        <div class="bg-furniture text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/furniture">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/furniture.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Permintaan Furniture</small>
+        </div>
+        <div class="bg-rumput text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/rumput">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/rumput.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Potong Rumput/ Tebang Pohon</small>
+        </div>
+        <div class="bg-ac text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/ac">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/ac.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Perawatan & Perbaikan AC</small>
+        </div>
+        <div class="bg-atk text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/atk">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/atk.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Alat Tulis <br>Kantor</small>
+        </div>
+        <div class="bg-snack text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/snack">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/snack.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Snack & Makanan Ringan</small>
+        </div>
+        <div class="bg-krp text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/krp">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/krp.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Kend. Ringan Penumpang</small>
+        </div>
+        <div class="bg-mess text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/mess">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/mess.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Mess atau Penginapan</small>
+        </div>
+        <div class="bg-dokumen text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/dokumen">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/dokumen.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Pengiriman <br>Dokumen</small>
+        </div>
+        <div class="bg-galon text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/galon">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/galon.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Air Mineral <br>(Galon)</small>
+        </div>
+        <div class="bg-acara text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/acara">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/acara.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Penyiapan <br>Acara</small>
+        </div>
+        <div class="bg-peralatan text-white rounded-lg p-2 drop-shadow-md flex items-center"
+          routerLink="/form/peralatan">
+          <div class="p-2 flex items-center justify-center" style="width:44px; height:40px;">
+            <div class="flex justify-center">
+              <img src="assets/icon/peralatan.png" style="max-width:28px; max-height: 28px;">
+            </div>
+          </div>
+          <small class="leading-3" style="white-space: break-spaces;">Peralatan (Lamput <br>& Kebersihan)</small>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="user?.atasan || user?.penyetuju" class="pb-1">
+      <h4 class="text-bold flex justify-between items-center gap-3">
+        <span class="truncate">Menng. Persetujuan Anda</span>
+        <small class="text-medium flex-shrink-0" routerLink="/persetujuan">
+          Lihat Semua
+          <span *ngIf="totalMenungguPersetujuan as tmp">({{tmp}})</span>
+        </small>
+      </h4>
+      <div *ngIf="!isMtLoading; else mtLoading">
+        <div *ngIf="menungguPersetujuan?.length > 0; else noMp;">
+          <div *ngFor="let p of menungguPersetujuan"
+            class="rounded-lg ion-padding ion-margin-bottom bg-background drop-shadow-md"
+            [routerLink]="'/detail/persetujuan/' + p._id">
+            <div class="flex items-center">
+              <div class="flex-1">
+                <small class="text-medium">Jenis Permintaan</small>
+                <div class=" text-bold">{{p.kategori.nama}}</div>
+              </div>
+              <div [ngClass]="'bg-' + p.kategori.kode" class="flex p-2 rounded-lg rounded-lg">
+                <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px" style="width: 20px; height: 20px;">
+              </div>
+            </div>
+            <hr class="bg-light mb-2 mt-2">
+            <div class="flex items-center gap-2">
+              <div [ngClass]="'text-' + p.kategori.kode"
+                class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
+                style="height: 38px; width: 38px;">
+                <img *ngIf="p.user.foto" [src]="p.user.foto" class="h-full w-full object-cover">
+                <b *ngIf="!p.user.foto" style="font-size: 14pt;">{{p.user.inisial}}</b>
+              </div>
+              <div class="flex-1 flex flex-col">
+                <div class="ion-no-margin text-bold ion-text-capitalize">{{p.user.namaLengkap}}</div>
+                <small>{{p.user.jabatan?.nama}}</small>
+              </div>
+              <div class="text-right">
+                <small class="text-medium">Tgl Permintaan</small>
+                <div class="ion-no-margin text-bold">{{p.createAt | date:'dd MMMM YYYY'}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="menungguPersetujuan.length > 2" class="text-medium text-center leading-3 ion-margin-bottom"
+            routerLink="/persetujuan">
+            <small>Lihat Semua <span *ngIf="totalMenungguPersetujuan as tmp">({{tmp}})</span></small>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noMp>
+        <div class="ion-padding border rounded-xl text-center text-medium">Tidak Ada Permintaan Menunggu Persetujuan Anda
+        </div>
+      </ng-template>
+      <ng-template #mtLoading>
+        <div class="ion-padding border rounded-xl text-center text-medium flex items-center justify-center gap-2" style="height: 78px;">
+          <ion-spinner name="crescent" color="medium" style="margin: -3px 0px;"></ion-spinner> <div>Memuat Permintaan...</div>
+        </div>
+        <!-- <div id="loading-persetujuan">
+          <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+            <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+              <div>
+                <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+                <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+                <div class="bg-light rounded-md animate"
+                  style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </ng-template>
+    </div>
+    <div>
+      <h4 class="text-bold flex justify-between items-center gap-3">
+        <span class="truncate">Permintaan Terakhir</span>
+        <small class="text-medium flex-shrink-0" routerLink="/permintaan">
+          Lihat Semua
+          <span *ngIf="totalPermintaanTerakhir as tpt">({{tpt}})</span>
+        </small>
+      </h4>
+      <div *ngIf="!isPtLoading; else ptLoading">
+        <div *ngIf="permintaanTerakhir?.length > 0; else noPt;">
+          <div *ngFor="let p of permintaanTerakhir"
+            class="rounded-lg ion-padding ion-margin-bottom bg-background drop-shadow-md">
+            <div [routerLink]="'/detail/permintaan/' + p._id">
+              <div class="flex items-center ion-margin-bottom">
+                <div class="flex-1">
+                  <small class="text-medium">Jenis Permintaan</small>
+                  <div class=" text-bold">{{p.kategori.nama}}</div>
+                </div>
+                <div [ngClass]="'bg-' + p.kategori.kode" class="flex p-2 rounded-lg rounded-lg">
+                  <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px"
+                    style="width: 20px; height: 20px;">
+                </div>
+              </div>
+              <div class="flex items-start gap-3 -mt-1">
+                <div class="flex-1">
+                  <small class="text-medium">Status</small>
+                  <ng-container [ngSwitch]="p.status">
+                    <div *ngSwitchCase="'menungguAtasan'" class="truncate-2"><b>Menng. Persetujuan Atasan</b></div>
+                    <div *ngSwitchCase="'ditolakAtasan'" class="truncate-2 text-danger"><b>Ditolak Atasan (Revisi)</b>
+                    </div>
+                    <div *ngSwitchCase="'menungguPenyetuju'" class="truncate-2"><b>Menunggu Persetujuan
+                        {{p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM'}}</b></div>
+                    <div *ngSwitchCase="'ditolakPenyetuju'" class="truncate-2 text-danger"><b>Ditolak
+                        {{p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM'}} (Revisi)</b></div>
+                    <div *ngSwitchCase="'proses'" class="truncate-2 text-warning"><b>Sedang Diproses</b></div>
+                    <div *ngSwitchCase="'selesai'" class="truncate-2 text-success"><b>Selesai</b></div>
+                    <div *ngSwitchDefault><b>-</b></div>
+                  </ng-container>
+                </div>
+                <div class="text-right">
+                  <small class="text-medium">Tgl Permintaan</small>
+                  <div class="ion-no-margin text-bold">03-04-2022</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="p.selesai">
+              <div *ngIf="p.peringkat; else noPeringkat">
+                <hr class="bg-light">
+                <div class="flex justify-between">
+                  <small class="text-medium">Ulasan Anda</small>
+                  <div class="flex" style="gap: 3px;">
+                    <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                      [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                    </ion-icon>
+                  </div>
+                </div>
+              </div>
+              <ng-template #noPeringkat>
+                <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
+                  class="p-2 rounded-lg text-center mt-2">
+                  <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
+                    <small>Beri Ulasan Untuk Permintaan Ini</small>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+          <div *ngIf="permintaanTerakhir.length > 2" class="text-medium text-center leading-3" routerLink="/permintaan">
+            <small>Lihat Semua <span *ngIf="totalPermintaanTerakhir as tpt">({{tpt}})</span></small>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noPt>
+        <div class="ion-padding border rounded-xl text-center text-medium">Tidak Ada Data Permintaan Terakhir</div>
+      </ng-template>
+      <ng-template #ptLoading>
+        <div class="ion-padding border rounded-xl text-center text-medium flex items-center justify-center gap-2">
+          <ion-spinner name="crescent" color="medium" style="margin: -3px 0px;"></ion-spinner> <div>Memuat Permintaan Terakhir...</div>
+        </div>
+        <!-- <div id="loading-permintan">
+          <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+            <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+              <div>
+                <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+                <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+                <div class="bg-light rounded-md animate"
+                  style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </ng-template>
+    </div>
+  </div>
+</ion-content>
+
+<ion-modal #pilihanModal class="items-end"
+  [style.--height]="user?.atasan || user?.penyetuju? '216px' : '168px'">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title><b>Pilihan</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item routerLink="/permintaan" (click)="pilihanModal.dismiss()">
+          <ion-label>Lihat Permintaan Anda</ion-label>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-item>
+        <ion-item *ngIf="user?.atasan || user?.penyetuju" routerLink="/persetujuan" (click)="pilihanModal.dismiss()">
+          <ion-label>Menunggu Persetujuan Anda</ion-label>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-item>
+        <ion-item (click)="keluar(pilihanModal)" lines="none">
+          <ion-label color="danger">Keluar Akun</ion-label>
+          <ion-icon color="danger" name="log-out-outline"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

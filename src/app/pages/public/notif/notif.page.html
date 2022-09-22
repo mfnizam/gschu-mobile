@@ -1,0 +1,49 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Detail Notifikiasi
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-start ion-padding-end">
+  <ion-refresher slot="fixed" (ionRefresh)="ambilNotif($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf="!isLoading; else notifLoading">
+    <div *ngIf="notif; else noNotif">
+      <h3><b>{{notif.nama}}</b></h3>
+      <p>{{notif.konten}}</p>
+    </div>
+  </div>
+  <ng-template #notifLoading>
+    <div class="ion-padding-top ion-padding-bottom">
+      <div class="bg-background rounded-xl flex gap-3" style="padding-bottom: 4px;">
+        <div id="loading-notif" class="flex-1">
+          <div class="bg-light rounded-md" style="width: 80%; height: 24px; margin-bottom: 22px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noNotif>
+    <div class="ion-margin-top ion-padding border rounded-xl text-center text-medium">Tidak ada notif untuk anda.</div>
+  </ng-template>
+</ion-content>
+<ion-footer *ngIf="notif && notif.tombol">
+  <ion-toolbar>
+    <div class="ion-padding">
+      <button
+        class="w-full bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative"
+        [routerLink]="notif.tombol.link">
+        <h6 class="ion-no-margin text-bold">{{notif.tombol.title}}</h6>
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,198 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Detail Akun
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="absolute w-full bg-header"
+    style="height: 130px; z-index: -1; border-radius: 0 0 200% 200%; width: 120vw; left: -10vw; top: 0;">
+  </div>
+
+  <div class="flex justify-end ion-no-margin" style="font-size: 20pt; margin-right: -8px;"
+    (click)="pilihanModal.present()">
+    <ion-icon name="ellipsis-vertical"></ion-icon>
+  </div>
+  <div class="flex items-center justify-center ion-margin-bottom">
+    <div class="relative">
+      <div
+        class="bg-background drop-shadow-md text-primary rounded-full overflow-hidden flex items-center justify-center text-2xl"
+        style="height: 180px; width: 180px;">
+        <img *ngIf="user?.foto; else noFoto" [src]="user?.foto" alt="foto profil" style="height: 100%; width: 100%; object-fit: cover;">
+        <ng-template #noFoto>
+          <b style="font-size: 60pt;">{{user?.inisial}}</b>
+        </ng-template>
+      </div>
+      <div class="absolute bg-background drop-shadow-md rounded-full p-2 flex"
+        style="font-size: 14pt; bottom: 12px; right: 12px;" (click)="ubahFoto(fotoModal)">
+        <ion-icon name="pencil-sharp"></ion-icon>
+      </div>
+    </div>
+  </div>
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small>Nama Lengkap</small>
+      <div class="ion-text-capitalize"><b>{{user?.namaLengkap}}</b></div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'Nama Lengkap', 'namaLengkap')">Ubah</div> -->
+  </div>
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small>Email</small>
+      <div><b>{{user?.email}}</b></div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'Email', 'email')">Ubah</div> -->
+  </div>
+  <!-- <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small>Kata Sandi</small>
+      <div><b>******************</b></div>
+    </div>
+    <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'Kata Sandi', 'sandi')">Ubah</div>
+  </div> -->
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small>No Tlp</small>
+      <div>
+        <b>
+          <span *ngIf="user?.noTlp; else noNoTlp">{{user?.kodeNoTlp}} {{user?.noTlp}}</span>
+          <ng-template #noNoTlp>-</ng-template>
+        </b>
+      </div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'No Tlp', 'noTlp')">Ubah</div> -->
+  </div>
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small>No. Pegawai</small>
+      <div><b>{{user?.noPegawai || '-'}}</b></div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'No. Pegawai', 'noPegawai')">Ubah</div> -->
+  </div>
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small class="ion-text-capitalize">{{user?.fungsi?.tipe}}</small>
+      <div>
+        <b>{{user?.fungsi?.organisasi?.nama || '-'}}</b>
+        <!-- <b>{{user?.fungsi?.organisasi?.nama + (user?.fungsi.organisasi?.zona? ' - ' + user?.fungsi.organisasi?.zona.nama : '') || '-'}}</b> -->
+      </div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'Wilayah Kerja', 'wilayahKerja')">Ubah</div> -->
+  </div>
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom">
+    <div>
+      <small>Fungsi</small>
+      <div><b>{{user?.fungsi?.nama || '-'}}</b></div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'Fungsi', 'fungsi')">Ubah</div> -->
+  </div>
+  <div class="w-full flex gap-3 items-center justify-between ion-margin-bottom ion-padding-bottom">
+    <div>
+      <small>Jabatan</small>
+      <div><b>{{user?.jabatan?.nama || '-'}}</b></div>
+    </div>
+    <!-- <div class="text-medium cursor-pointer" (click)="bukaUbah(ubahModal, 'Jabatan', 'fungsi')">Ubah</div> -->
+  </div>
+
+  <div class="ion-padding border border-primary text-primary rounded-xl flex items-center justify-center gap-3"
+    (click)="keluar()">
+    <ion-icon name="exit-outline" style="font-size: 20pt; margin-top: -2pt;"></ion-icon>
+    <b>Keluar</b>
+  </div>
+</ion-content>
+
+<ion-modal #ubahModal [breakpoints]="[0, 1]" [initialBreakpoint]="1" handle="false" (willDismiss)="dismissUbah()"
+  class="modal-time-sheet-custom" style="--height: 216px;">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title><b>Ubah {{titleUbah}}</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="h-full flex flex-col ion-padding">
+        <div class="flex-1 ion-margin-bottom">
+          <ion-item fill="outline" class="item-rounded-xl"
+            style="--highlight-background: var(--border-color); --full-highlight-height: 1px;">
+            <!-- <ion-icon slot="start" name="person" color="medium" style="margin-top: 11px;"></ion-icon> -->
+            <ion-label position="floating">{{titleUbah}}</ion-label>
+            <div slot="start" *ngIf="fcmUbah == 'noTlp'" class="mr-2">+62</div>
+            <ion-input [(ngModel)]="inputUbah" [class.ion-text-capitalize]="fcmUbah == 'namaLengkap'" class="-mb-2">
+            </ion-input>
+          </ion-item>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-primary-tint text-primary ion-padding rounded-xl text-center" (click)="ubahModal.dismiss()">
+            <b>Batal</b>
+          </div>
+          <div class="bg-primary text-on-primary ion-padding rounded-xl flex items-center justify-center relative"
+            (click)="simpanUbah(ubahModal)">
+            <b [class.opacity-0]="ubahLoading">Simpan</b>
+            <ion-spinner [class.opacity-0]="!ubahLoading" class="absolute" color="light"></ion-spinner>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #fotoModal (willDismiss)="dismissUbahFoto()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title><b>Edit Foto Profil</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="h-full flex flex-col">
+        <div class="flex-1 flex items-center">
+          <!-- <img id="crop" [src]="imgUbahFoto" alt="fotocrop" class="h-full object-contain"  style=" display: block; max-width: 100%;"> -->
+          <ion-img *ngIf="imgUbahFoto" [src]="imgUbahFoto" class="w-full h-full"></ion-img>
+        </div>
+        <div class="ion-padding grid grid-cols-2 items-center gap-3">
+          <div class="bg-primary-tint text-primary rounded-lg ion-padding text-center"
+            (click)="batalUbahFoto(fotoModal)"><b>Batal</b></div>
+          <div
+            class="bg-primary text-on-primary rounded-lg ion-padding text-center flex items-center justify-center relative"
+            (click)="simpanFoto(fotoModal)">
+            <b [class.opacity-0]="ufLoading">Simpan</b>
+            <ion-spinner [class.opacity-0]="!ufLoading" class="absolute" color="light"></ion-spinner>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #pilihanModal [breakpoints]="[0, 1]" [initialBreakpoint]="1" handle="false" class="modal-time-sheet-custom"
+  style="--height: 216px">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title><b>Pilihan Akun</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item routerLink="/biodata" [queryParams]="{ ubah: true, redirect: '/akun' }"
+          (click)="pilihanModal.dismiss()">
+          <ion-label>Ubah Akun</ion-label>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-label>Ubah Sandi Akun (coming soon)</ion-label>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-item>
+        <ion-item (click)="keluar(pilihanModal)" lines="none">
+          <ion-label color="danger">Keluar Akun</ion-label>
+          <ion-icon color="danger" name="log-out-outline"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

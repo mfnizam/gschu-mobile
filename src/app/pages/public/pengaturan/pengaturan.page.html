@@ -1,0 +1,87 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Pengaturan
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- <div class="bg-primary-tint text-primary rounded-lg ion-margin-bottom flex items-center justify-center"
+    style="height: 250px;">
+    Grafik data permintaan
+  </div>
+  <div class="grid grid-cols-3 gap-3 ion-padding-bottom">
+    <div class="text-furniture border-solid rounded-lg p-2">
+      <small>Menunggu</small>
+      <div class="ion-no-margin"><b class="text-3xl">30 </b><small> Perm</small></div>
+      <div class="pt-1 pb-1 bg-furniture text-on-furniture rounded-lg text-center mt-2">Cetak</div>
+    </div>
+    <div class="text-ac border-solid rounded-lg p-2">
+      <small>Diproses</small>
+      <div class="ion-no-margin"><b class="text-3xl">30 </b><small> Perm</small></div>
+      <div class="pt-1 pb-1 bg-ac text-on-ac rounded-lg text-center mt-2">Cetak</div>
+    </div>
+    <div class="text-rumput border-solid rounded-lg p-2">
+      <small>Selesai</small>
+      <div class="ion-no-margin"><b class="text-3xl">30 </b><small> Perm</small></div>
+      <div class="pt-1 pb-1 bg-rumput text-on-rumput rounded-lg text-center mt-2">Cetak</div>
+    </div>
+  </div> -->
+
+  <h4 class="mt-1 text-bold flex justify-between items-center">
+    <span>Master Data</span>
+  </h4>
+  <div class="grid grid-cols-2 gap-4">
+    <!-- <div class="bg-background border rounded-lg ion-padding" routerLink="/master/zona">
+      <div><b>Data Zona</b></div>
+      <small class="text-medium">Jumlah: 1 Zona</small>
+    </div>
+    <div class="bg-background border rounded-lg ion-padding" routerLink="/master/wilayah">
+      <div class="truncate"><b>Data Wilayah Kerja</b></div>
+      <small class="text-medium">Jumlah: 1 Wilayah Kerja</small>
+    </div> -->
+    <div class="bg-background border rounded-lg ion-padding flex items-center" routerLink="/master/fungsi">
+      <div class="flex-1">
+        <div><b>Data Fungsi</b></div>
+        <small class="text-medium">Jumlah: {{total?.fungsi || 0}} Fungsi</small>
+      </div>
+      <!-- <ion-icon name="chevron-forward"></ion-icon> -->
+    </div>
+    <div class="bg-background border rounded-lg ion-padding flex items-center" routerLink="/master/jabatan">
+      <div class="flex-1">
+        <div><b>Data Jabatan</b></div>
+        <small class="text-medium">Jumlah: {{total?.jabatan || 0}} Jabatan</small>
+      </div>
+      <!-- <ion-icon name="chevron-forward"></ion-icon> -->
+    </div>
+    <!-- <div class="bg-background border rounded-lg ion-padding flex items-center" routerLink="/master/atasan">
+        <div class="flex-1">
+          <div><b>Data Atasan</b></div>
+          <small class="text-medium">Jumlah: 30 Penyetuju</small>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+      <div class="bg-background border rounded-lg ion-padding flex items-center" routerLink="/master/penyetuju">
+        <div class="flex-1">
+          <div><b>Data Penyetuju</b></div>
+          <small class="text-medium">Jumlah: 30 Penyetuju</small>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div> -->
+    <!-- <div class="bg-background drop-shadow-md rounded-lg ion-padding" routerLink="/master/kategori">
+        <div class="truncate"><b>Kategori Permintaan</b></div>
+        <small class="text-medium">Jumlah: 12 Kategori</small>
+      </div> -->
+  </div>
+
+  <!-- <h4 class="text-bold flex justify-between items-center">
+    <span>Fitur Cetak</span>
+  </h4>
+  <div class="ion-padding text-center border rounded-lg">
+    Belum ada fitur cetak
+  </div> -->
+</ion-content>

@@ -1,0 +1,29 @@
+<ion-header class="ion-no-border drop-shadow-sm">
+	<ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Berhasil
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" >
+	<div class="flex items-center justify-center ion-margin-bottom w-full" style="margin-top:80px;">
+		<img src="assets/auth/stuju.png" class="h-full object-cover">
+	</div>
+	<div class="w-full text-center ion-margin-bottom" style="margin-top:80px;">
+		<div class="text-medium text-bold text-sm">Kata Sandi Kamu Telah Berhasil di Ganti <br>Silakan Login Kembali.</div>	
+	</div>
+</ion-content>
+<ion-footer>
+	<ion-toolbar>
+		<div class="ion-padding">
+			<div class="w-full bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative" routerLink="/masuk">
+				<h6 [class.opacity-0]="isLoading" class="ion-no-margin text-bold">Masuk</h6>
+				<ion-spinner [class.opacity-0]="!isLoading" color="light" class="absolute"></ion-spinner>
+			</div>
+		</div>
+	</ion-toolbar>
+</ion-footer>

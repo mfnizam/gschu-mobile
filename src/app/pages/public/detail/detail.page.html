@@ -1,0 +1,912 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Detail Permintaan
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="ambilPermintaan($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf="!isLoading; else permintaanLoading">
+    <div *ngIf="permintaan as p; else noPermintaan">
+      <div class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="flex items-center justify-center">
+          <div [ngClass]="'text-' + p.kategori.kode"
+            class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
+            style="height: 80px; width: 80px;">
+            <b *ngIf="!p.user.foto" style="font-size: 24pt;">{{p.user.inisial}}</b>
+            <img *ngIf="p.user.foto" [src]="p.user.foto" class="h-full w-full object-cover">
+          </div>
+        </div>
+        <div class="text-center">
+          <h4 class="mb-0 mt-3 ion-text-capitalize"><b>{{p.user.namaLengkap}}</b></h4>
+          <div>{{p.user.jabatan?.nama}}</div>
+        </div>
+        <hr class="bg-light mt-2 mb-2">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1">
+            <small class="text-medium">No Tlp</small>
+            <div><b>{{p.user.kodeNoTlp}} {{p.user.noTlp}}</b></div>
+          </div>
+          <div class="flex-shrink-0 text-right">
+            <small class="text-medium">Fungsi</small>
+            <div><b>{{p.user.fungsi?.nama}}</b></div>
+          </div>
+        </div>
+        <hr class="bg-light mt-2 mb-2">
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <div class="flex-1">
+            <small class="text-medium">Jenis Permintaan</small>
+            <div><b>{{p.kategori.nama}}</b></div>
+          </div>
+          <div [ngClass]="'bg-' + p.kategori.kode" class="flex p-2 rounded-lg">
+            <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px"
+              style="max-width: 20px; max-height: 20px;">
+          </div>
+        </div>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="flex-1">
+            <small class="text-medium">No Surat</small>
+            <div><b>{{p.noSurat}}</b></div>
+          </div>
+          <div class="flex-shrink-0 text-right">
+            <small class="text-medium">Tgl Permintaan</small>
+            <div><b>{{p.createAt | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 -mb-1">
+          <div class="flex-1">
+            <small class="text-medium">Status</small>
+            <ng-container [ngSwitch]="p.status">
+              <div *ngSwitchCase="'menungguAtasan'" class="truncate-2">
+                <b>Menunngu Persetujuan {{user?._id == p.diketahui?.oleh?._id? 'Anda' : 'Atasan'}}</b>
+              </div>
+              <div *ngSwitchCase="'ditolakAtasan'" class="truncate-2 text-danger">
+                <b>{{user?._id == p.diketahui?.oleh?._id? 'Anda Tolak, Menunggu Revisi' : 'Ditolak Atasan
+                  (Revisi)'}}</b>
+              </div>
+              <div *ngSwitchCase="'menungguPenyetuju'" class="truncate-2">
+                <b>Menunggu Persetujuan {{user?._id == p.disetujui?.oleh?._id? 'Anda' : (p.disetujui?.oleh?.fungsi?.nama
+                  || 'SCM & AM')}}</b>
+              </div> <!-- rubah kata scm sesuaikan dengan nama fungsi penyetuju -->
+              <div *ngSwitchCase="'ditolakPenyetuju'" class="truncate-2 text-danger">
+                <b>{{user?._id == p.disetujui?.oleh?._id? 'Anda Tolak, Menunggu Revisi' : 'Ditolak ' +
+                  (p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM') + ' (Revisi)'}}</b>
+              </div>
+              <div *ngSwitchCase="'proses'" class="truncate-2 text-warning"><b>Sedang Diproses</b></div>
+              <div *ngSwitchCase="'selesai'" class="truncate-2 text-success"><b>Selesai</b></div>
+              <div *ngSwitchDefault><b>-</b></div>
+            </ng-container>
+          </div>
+          <div *ngIf="p.selesai">
+            <div *ngIf="p.peringkat; else noPeringkat" style="text-align: right;">
+              <small class="text-medium">Ulasan Anda</small>
+              <div class="flex" style="gap: 3px; height: 22px;">
+                <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                  [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                </ion-icon>
+              </div>
+            </div>
+            <ng-template #noPeringkat>
+              <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
+                class="pt-2 pb-2 ion-padding-start ion-padding-end rounded-lg text-center mt-2">
+                <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
+                  <small>Beri Ulasan</small>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="text-medium pt-2"><b>Rincian Permintaan</b></h5>
+      <!-- DETAIL rdp =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'rdp'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Alamat RDP/Fasum</small>
+          <div class="ion-text-capitalize"><b>{{p.permintaan.alamat}}</b></div>
+        </div>
+        <div class="ion-margin-bottom">
+          <small class="text-medium">Tgl Pelaksanaan</small>
+          <div class="ion-text-capitalize"><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div *ngFor="let pp of p.permintaan.perbaikan; let i = index;"
+          class="ion-padding border rounded-xl ion-margin-bottom">
+          <div class="-mt-1">
+            <small class="text-medium">Jenis Kerusakan {{i + 1}}</small>
+            <div class="-mb-1 ion-text-capitalize"><b>{{pp.jenis}}</b></div>
+            <div *ngIf="pp.foto" class="mt-2">
+              <small class="text-medium">Foto Kerusakan {{i + 1}}</small>
+              <div class="flex">
+                <img [src]="pp.foto" [alt]="'foto kerusakan' + (i + 1)" class="mt-1 w-full rounded-lg">
+              </div>
+              <!-- <div class="w-full rounded-lg bg-light mt-1 flex items-center justify-center" style="height: 100px;">
+                <ion-icon name="image" class="text-light-shade" style="font-size: 30pt;"></ion-icon>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL furniture =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'furniture'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Alamat Pengiriman Furniture</small>
+          <div class="ion-text-capitalize"><b>{{p.permintaan.alamat}}</b></div>
+        </div>
+        <div class="ion-margin-bottom">
+          <small class="text-medium">Tgl Pengiriman</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div *ngFor="let pf of p.permintaan.furniture"
+          class="ion-padding border rounded-xl ion-margin-bottom flex justify-between gap-3">
+          <div class="-mt-1">
+            <small class="text-medium">Nama Furniture</small>
+            <div class=""><b>{{pf.nama}}</b></div>
+          </div>
+          <div class="text-right flex-shrink-0 -mt-1">
+            <small class="text-medium">Jumlah</small>
+            <div class="ion-text-capitalize"><b>{{pf.jumlah}} {{pf.satuan}}</b></div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL rumput =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'rumput'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Tgl Pelaksanaan</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div *ngFor="let pp of p.permintaan.pemotongan; let i = index;"
+          class="ion-padding border rounded-xl ion-margin-bottom">
+          <div class="-mt-1">
+            <small class="text-medium">Lokasi Potong Rumput/Pohon {{i + 1}}</small>
+            <div class="-mb-1 ion-text-capitalize"><b>{{pp.lokasi}}</b></div>
+            <div *ngIf="pp.foto" class="mt-2">
+              <small class="text-medium">Foto Lokasi {{i + 1}}</small>
+              <div class="flex">
+                <img [src]="pp.foto" [alt]="'foto kerusakan' + (i + 1)" class="mt-1 w-full rounded-lg">
+              </div>
+              <!-- <div class="w-full rounded-lg bg-light mt-1 flex items-center justify-center" style="height: 100px;">
+                <ion-icon name="image" class="text-light-shade" style="font-size: 30pt;"></ion-icon>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL ac =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'ac'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Lokasi AC</small>
+          <div class="first-uppercase"><b>{{p.permintaan.alamat}}</b></div>
+        </div>
+        <div class="ion-margin-bottom">
+          <small class="text-medium">Tgl Pelaksanaan</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div *ngFor="let pp of p.permintaan.perbaikan; let i = index;"
+          class="ion-padding border rounded-xl ion-margin-bottom">
+          <div class="-mt-1">
+            <small class="text-medium">Jenis Kerusakan {{i + 1}}</small>
+            <div class="-mb-1 ion-text-capitalize"><b>{{pp.jenis}}</b></div>
+            <div *ngIf="pp.foto" class="mt-2">
+              <small class="text-medium">Foto Kerusakan {{i + 1}}</small>
+              <div class="flex">
+                <img [src]="pp.foto" [alt]="'foto kerusakan' + (i + 1)" class="mt-1 w-full rounded-lg">
+              </div>
+              <!-- <div class="w-full rounded-lg bg-light mt-1 flex items-center justify-center" style="height: 100px;">
+                <ion-icon name="image" class="text-light-shade" style="font-size: 30pt;"></ion-icon>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL atk =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'atk'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Lokasi Kerja</small>
+          <div class="first-uppercase"><b>{{p.permintaan.alamat}}</b></div>
+        </div>
+        <div class="ion-margin-bottom">
+          <small class="text-medium">Tgl Pelaksanaan</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div *ngFor="let pa of p.permintaan.atk"
+          class="ion-padding border rounded-xl ion-margin-bottom flex justify-between gap-3">
+          <div class="-mt-1">
+            <small class="text-medium">Nama ATK</small>
+            <div><b>{{pa.nama}}</b></div>
+          </div>
+          <div class="text-right flex-shrink-0 -mt-1">
+            <small class="text-medium">Jumlah</small>
+            <div class="ion-text-capitalize"><b>{{pa.jumlah}} {{pa.satuan}}</b></div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL snack =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'snack'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="flex justify-between gap-3">
+          <div class="mb-2 -mt-1">
+            <small class="text-medium">Judul Rapat / Kegiatan</small>
+            <div><b>{{p.permintaan.judul}}</b></div>
+          </div>
+          <div class="mb-2 -mt-1 text-right">
+            <small class="text-medium">Jumlah Peserta</small>
+            <div><b>{{p.permintaan.jumlah}} Orang</b></div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="text-medium">Tgl Pelaksanaan</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Pengambilan</small>
+          <div class="ion-text-capitalize"><b>{{p.permintaan.pengambilan}}</b></div>
+        </div>
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Perihal</small>
+          <div>
+            <div *ngIf="p.permintaan.perihal?.snackPagi">
+              <ion-icon name="checkmark-circle-outline" style="margin-bottom: -2px;"></ion-icon> <b> Snack Pagi</b>
+            </div>
+            <div *ngIf="p.permintaan.perihal?.makanSiang">
+              <ion-icon name="checkmark-circle-outline" style="margin-bottom: -2px;"></ion-icon> <b> Makan Siang</b>
+            </div>
+            <div *ngIf="p.permintaan.perihal?.snackSore">
+              <ion-icon name="checkmark-circle-outline" style="margin-bottom: -2px;"></ion-icon> <b> Snack Sore</b>
+            </div>
+            <div *ngIf="p.permintaan.perihal?.makanMalam">
+              <ion-icon name="checkmark-circle-outline" style="margin-bottom: -2px;"></ion-icon> <b> Makan Malam</b>
+            </div>
+            <!-- <b>{{p.permintaan.perihal}}</b> -->
+          </div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2 -mt-1">
+            <small class="text-medium">Cost Center</small>
+            <div><b>{{p.permintaan.costCenter || '-'}}</b></div>
+          </div>
+          <div class="mb-2 -mt-1 text-right">
+            <small class="text-medium">G/L. Account</small>
+            <div><b>{{p.permintaan.GLAccount || '-'}}</b></div>
+          </div>
+        </div>
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">PIC Kegiatan</small>
+          <div><b>{{p.permintaan.pic || '-'}}</b></div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL krp =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'krp'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="flex justify-between gap-3">
+          <div class="mb-2 -mt-1">
+            <small class="text-medium">Tgl Keberangkatan</small>
+            <div><b>{{p.permintaan.tglKeberangkatan | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+          <div class="mb-2 -mt-1 text-right">
+            <small class="text-medium">Tgl Kembali</small>
+            <div><b>{{p.permintaan.tglKembali | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+        </div>
+
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Jam Penjemputan</small>
+            <div><b>{{p.permintaan.waktuPenjemputan | date:'hh:mm'}}</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">Jumlah Penumpang</small>
+            <div><b>{{p.permintaan.jumlahPenumpang}} Orang</b></div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="text-medium">Tempat Penjemputan</small>
+          <div class="first-uppercase"><b>{{p.permintaan.tempatPenjemputan}}</b></div>
+        </div>
+        <div class="mb-2">
+          <small class="text-medium">Tempat Tujuan</small>
+          <div class="first-uppercase"><b>{{p.permintaan.tempatTujuan}}</b></div>
+        </div>
+        <div class="ion-margin-bottom">
+          <small class="text-medium">Jenis Pelayanan</small>
+          <div class="ion-text-capitalize"><b>{{p.permintaan.jenisPelayanan}}</b></div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL mess =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'mess'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Nama Penanggung Jawab</small>
+          <div class="ion-text-capitalize"><b>{{p.permintaan.penanggungJawab}}</b></div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Check In</small>
+            <div><b>{{p.permintaan.checkIn | date:'dd MMMM yyyy'}}</b>
+            </div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">Check Out</small>
+            <div><b>{{p.permintaan.checkOut | date:'dd MMMM yyyy'}}</b>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Jumlah Tamu</small>
+            <div><b>{{p.permintaan.jumlahTamu}} Orang</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">Jumlah Kamar</small>
+            <div><b>{{p.permintaan.jumlahKamar}} Kamar</b></div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL dokumen =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'dokumen'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="flex justify-between gap-3">
+          <div class="mb-2 -mt-1">
+            <small class="text-medium">Jenis Dokumen</small>
+            <div class="first-uppercase"><b>{{p.permintaan.jenisDokumen}}</b></div>
+          </div>
+          <div class="mb-2 -mt-1 text-right">
+            <small class="text-medium">Tgl Pengiriman</small>
+            <div><b>{{p.permintaan.tglPengiriman | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+        </div>
+        <hr class="bg-light">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Nama Pengirim</small>
+            <div class="ion-text-capitalize"><b>{{p.permintaan.namaPengirim}}</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">No Tlp Pengirim</small>
+            <div><b>{{p.permintaan.noTlpPengirim}}</b></div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="text-medium">Alamat Pengirim</small>
+          <div class="first-uppercase"><b>{{p.permintaan.alamatPengirim}}</b></div>
+        </div>
+        <hr class="bg-light">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Nama Penerima</small>
+            <div class="ion-text-capitalize"><b>{{p.permintaan.namaPenerima}}</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">No Tlp Penerima</small>
+            <div><b>{{p.permintaan.noTlpPenerima}}</b></div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="text-medium">Alamat Penerima</small>
+          <div class="first-uppercase"><b>{{p.permintaan.alamatPenerima}}</b></div>
+        </div>
+        <hr class="bg-light">
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL galon =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'galon'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Tempat Pengiriman</small>
+          <div class="first-uppercase"><b>{{p.permintaan.lokasi}}</b></div>
+        </div>
+        <div class="mb-2">
+          <small class="text-medium">Tgl Pengiriman & Waktu</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}} {{p.permintaan.waktu | date:'hh:mm'}}</b></div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Jumlah Galon</small>
+            <div><b>{{p.permintaan.jumlah}} Galon</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">Pengambilan</small>
+            <div class="ion-text-capitalize"><b>{{p.permintaan.jenisPelayanan}}</b></div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL acara =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'acara'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="flex justify-between gap-3">
+          <div class="mb-2 -mt-1">
+            <small class="text-medium">Nama Acara</small>
+            <div class="ion-text-capitalize"><b>{{p.permintaan.nama}}</b></div>
+          </div>
+          <div class="mb-2 -mt-1 text-right">
+            <small class="text-medium">Jenis Acara</small>
+            <div class="ion-text-capitalize"><b>{{p.permintaan.jenis}}</b></div>
+          </div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Tgl Pelaksanaan</small>
+            <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">Waktu Pelaksanaan</small>
+            <div><b>{{p.permintaan.tgl | date:'hh:mm'}}</b></div>
+          </div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Cost Center</small>
+            <div><b>{{p.permintaan.costCenter || '-'}}</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">G/L. Account</small>
+            <div><b>{{p.permintaan.GLAccount || '-'}}</b></div>
+          </div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">Tempat Acara</small>
+            <div><b>{{p.permintaan.tempat}}</b></div>
+          </div>
+          <div class="mb-2 text-right">
+            <small class="text-medium">Jumlah Peserta</small>
+            <div><b>{{p.permintaan.jumlah}} Orang</b></div>
+          </div>
+        </div>
+        <div class="flex justify-between gap-3">
+          <div class="mb-2">
+            <small class="text-medium">PIC Acara</small>
+            <div><b>{{p.permintaan.pic}}</b></div>
+          </div>
+          <div class="ion-margin-bottom text-right">
+            <small class="text-medium">No Tlp PIC Acara</small>
+            <div><b>{{p.permintaan.noTlpPic}}</b></div>
+          </div>
+        </div>
+        <div *ngFor="let pk of p.permintaan.kebutuhan; let i = index;"
+          class="ion-padding border rounded-xl ion-margin-bottom">
+          <div class="w-full flex justify-between gap-2">
+            <div class="mb-2 -mt-1">
+              <small class="text-medium">Kebutuhan {{i + 1}}</small>
+              <div class="mb-1 ion-text-capitalize"><b>{{pk.nama}}</b></div>
+            </div>
+            <div class="mb-2 -mt-1 text-right flex-shrink-0">
+              <small class="text-medium">Jumlah</small>
+              <div class="mb-1 ion-text-capitalize"><b>{{pk.jumlah}} {{pk.satuan}}</b></div>
+            </div>
+          </div>
+          <div class="">
+            <small class="text-medium">Tgl Dibutuhkan</small>
+            <div><b>{{pk.tgl | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- DETAIL peralatan =============================================================== -->
+      <div *ngIf="p.kategori.kode == 'peralatan'"
+        class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="mb-2 -mt-1">
+          <small class="text-medium">Lokasi Kerja</small>
+          <div><b>{{p.permintaan.alamat}}</b></div>
+        </div>
+        <div class="ion-margin-bottom">
+          <small class="text-medium">Tgl Diperlukan</small>
+          <div><b>{{p.permintaan.tgl | date:'dd MMMM yyyy'}}</b></div>
+        </div>
+        <div *ngFor="let pp of p.permintaan.peralatan; let i = index;"
+          class="ion-padding border rounded-xl ion-margin-bottom">
+          <div *ngIf="pp.nama == 'Lampu'; else bukanLampu">
+            <div class="-mt-1">
+              <small class="text-medium">Nama Keperluan {{i + 1}}</small>
+              <div class="mb-1 ion-text-capitalize"><b>{{pp.nama}}</b></div>
+            </div>
+            <div class="flex justify-between gap-3">
+              <div class="">
+                <small class="text-medium">Jumlah</small>
+                <div class="ion-text-capitalize"><b>{{pp.jumlah}} Lampu</b></div>
+              </div>
+              <div class="flex-shrink-0 text-right">
+                <small class="text-medium">Daya Lampu</small>
+                <div><b>{{pp.satuan}} Watt</b></div>
+              </div>
+            </div>
+          </div>
+          <ng-template #bukanLampu>
+            <div class="flex justify-between gap-3">
+              <div class="-mt-1">
+                <small class="text-medium">Nama Keperluan {{i + 1}}</small>
+                <div class="ion-text-capitalize"><b>{{pp.nama}}</b></div>
+              </div>
+              <div class="-mt-1 flex-shrink-0 text-right">
+                <small class="text-medium">Jumlah</small>
+                <div class="ion-text-capitalize"><b>{{pp.jumlah}} {{pp.satuan}}</b></div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+        <div class="">
+          <small class="text-medium">Catatan</small>
+          <div class="whitespace-pre-line first-uppercase"><b>{{p.permintaan.catatan || '-'}}</b></div>
+        </div>
+      </div>
+
+      <!-- Penyetuju =============================================================== -->
+      <ng-container *ngIf="p.diketahui as dk">
+        <div *ngIf="!dk.disabled && dk.status">
+          <h5 class="text-medium pt-2"><b>Penyetuju Atasan</b></h5>
+          <div class="ion-padding bg-background drop-shadow-md rounded-lg ion-margin-bottom">
+            <div class="flex items-center gap-3">
+              <div [ngClass]="'text-' + p.kategori.kode"
+                class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
+                style="height: 38px; width: 38px;">
+                <b *ngIf="!dk.oleh?.foto" style="font-size: 15pt;">{{dk.oleh?.inisial}}</b>
+                <img *ngIf="dk.oleh?.foto" [src]="dk.oleh?.foto" class="h-full w-full object-cover">
+              </div>
+              <div class="flex-1 flex flex-col">
+                <div class="ion-no-margin text-bold ion-text-capitalize">{{dk.oleh?.namaLengkap}}</div>
+                <small>{{dk.oleh?.jabatan?.nama}}</small>
+              </div>
+              <div *ngIf="dk.status as status" class="flex-shrink-0 flex flex-col text-right">
+                <div [class]="status == 1? 'text-success' : status == 2? 'text-danger' : 'text-medium'"
+                  class="text-bold">
+                  <span *ngIf="user?._id == p.diketahui.oleh?._id; else nonSetujui">{{status == 1? 'Anda Setujui' :
+                    status == 2? 'Anda Tolak' : 'Menunggu'}}</span>
+                  <ng-template #nonSetujui>
+                    <span>{{status == 1? 'Disetujui' : status == 2? 'Ditolak' : 'Menunggu'}}</span>
+                  </ng-template>
+                </div>
+                <small>{{dk.tgl | date:'dd MMMM yyyy'}}</small>
+              </div>
+            </div>
+            <div *ngIf="dk.status == 2">
+              <hr class="bg-light mt-2 mb-2">
+              <div class="-mt-1">
+                <small class="text-medium">Catatan Revisi</small>
+                <div class="first-uppercase">{{dk.catatan}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="p.disetujui as ds">
+        <div *ngIf="!ds.disabled && ds.status">
+          <h5 class="text-medium pt-2"><b>Penyetuju {{ds.oleh?.fungsi?.nama || 'SCM & AM'}}</b></h5>
+          <div class="ion-padding bg-background drop-shadow-md rounded-lg ion-margin-bottom">
+            <div class="flex items-center gap-3">
+              <div [ngClass]="'text-' + p.kategori.kode"
+                class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
+                style="height: 38px; width: 38px;">
+                <b *ngIf="!ds.oleh?.foto" style="font-size: 15pt;">{{ds.oleh?.inisial}}</b>
+                <img *ngIf="ds.oleh?.foto" [src]="ds.oleh?.foto" class="h-full w-full object-cover">
+              </div>
+              <div class="flex-1 flex flex-col">
+                <div class="ion-no-margin text-bold ion-text-capitalize">{{ds.oleh?.namaLengkap}}</div>
+                <small>{{ds.oleh?.jabatan?.nama}}</small>
+              </div>
+              <div *ngIf="ds.status as status" class="flex-shrink-0 flex flex-col text-right">
+                <div [class]="status == 1? 'text-success' : status == 2? 'text-danger' : 'text-medium'"
+                  class="text-bold">
+                  <span *ngIf="user?._id == p.disetujui.oleh?._id; else nonSetujui">{{status == 1? 'Anda Setujui' :
+                    status == 2? 'Anda Tolak' : 'Menunggu'}}</span>
+                  <ng-template #nonSetujui>
+                    <span>{{status == 1? 'Disetujui' : status == 2? 'Ditolak' : 'Menunggu'}}</span>
+                  </ng-template>
+                  <!-- user?._id == p.disetujui.oleh?._id? 'Anda Tolak' :  -->
+                </div>
+                <small>{{ds.tgl | date:'dd MMMM yyyy'}}</small>
+              </div>
+            </div>
+            <div *ngIf="ds.status == 2">
+              <hr class="bg-light mt-2 mb-2">
+              <div class="-mt-1">
+                <small class="text-medium">Catatan Revisi</small>
+                <div class="first-uppercase">{{ds.catatan}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="jenisPermintaan == 'persetujuan' && 
+        p.disetujui?.status == 1 && 
+        (p.diketahui?.status == 1 || p.diketahui.disabled) && 
+        !p.selesai && user?.penyetuju">
+        <div [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
+          class="ion-padding rounded-xl flex items-center justify-center gap-3" (click)="selesai(p._id)">
+          <ion-icon name="checkmark-outline" style="font-size: 20pt; margin-top: -4px; margin-bottom: -2px;"></ion-icon>
+          <b>Konfirmasi Selesai</b>
+        </div>
+      </ng-container>
+
+
+
+      <div *ngIf="jenisPermintaan == 'persetujuan' && 
+        ((user.atasan && (!p.diketahui?.status || p.diketahui?.status < 1) && !p.diketahui.disabled) || 
+        (user.penyetuju && (!p.disetujui?.status || p.disetujui?.status < 1)))"
+        class="ion-margin-top grid grid-cols-2 gap-3">
+        <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
+          class="ion-padding text-rdp rounded-xl text-center" (click)="tolakModal.present()">
+          <b>Tolak</b>
+        </div>
+        <div [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
+          class="ion-padding text-rdp rounded-xl text-center" (click)="setujuModal.present()">
+          <b>Setuju</b>
+        </div>
+      </div>
+
+      <ng-container
+        *ngIf="jenisPermintaan == 'permintaan' && (p.diketahui?.status == 2 || p.disetujui?.status == 2) && !p.selesai">
+        <div [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
+          class="ion-padding rounded-xl flex items-center justify-center gap-2 ion-margin-bottom"
+          [routerLink]="'/form/' + p.kategori.kode + '/' + p._id">
+          <ion-icon name="refresh-circle-outline" style="font-size: 20pt; margin-top: -4px; margin-bottom: -2px;">
+          </ion-icon>
+          <b>Perbaiki Permintaan (Revisi)</b>
+        </div>
+      </ng-container>
+
+      <div *ngIf="jenisPermintaan == 'permintaan'" [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
+        class="ion-padding text-rdp rounded-xl text-center">
+        <b>Cetak Permintaan</b>
+      </div>
+
+    </div>
+  </div>
+
+
+  <ng-template #permintaanLoading>
+    <div id="loading-detail">
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 344px;">
+        <div class="flex flex-col items-center" style="margin-bottom: 30px;">
+          <div class="bg-light rounded-full" style="height: 80px; width: 80px;"></div>
+          <div class="bg-light rounded-md mt-3" style="width: 50%; height: 18px;"></div>
+          <div class="bg-light rounded-md mt-2" style="width: 30%; height: 14px;"></div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex-1" style="direction: rtl;">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3" style="margin-top: 26px;">
+          <div class="flex-1">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="bg-light rounded-lg" style="height: 36px; width: 36px;"></div>
+        </div>
+        <div class="flex gap-3" style="margin-top: 18px;">
+          <div class="flex-1">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex-1" style="direction: rtl;">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 70%; height: 14px; margin-top: 6px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md">
+        <div class="flex-1 ion-margin-bottom">
+          <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 9px;"></div>
+        </div>
+        <div class="flex-1">
+          <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 9px;"></div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noPermintaan>
+    <div class="absolute w-full h-full left-0 top-0 ion-padding flex flex-col items-center justify-center">
+      <h5>
+        Tidak Ada Permintaan
+      </h5>
+      <div class="flex items-center gap-2 border rounded-xl ion-padding" routerLink="../" routerDirection="back">
+        <ion-icon name="chevron-back"></ion-icon> Ke Halaman Sebelumnya
+      </div>
+    </div>
+  </ng-template>
+</ion-content>
+
+<ion-modal #setujuModal class="modal-konfirmasi">
+  <ng-template>
+    <div class="ion-padding ion-margin bg-background rounded-xl text-center" style="color: var(--ion-text-color, #000)">
+      <!-- <div class="ion-padding flex items-center justify-center">
+        <svg width="100%" height="100%" viewBox="0 0 244 235" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M124.748 209.897C176.009 209.897 217.565 168.342 217.565 117.08C217.565 65.819 176.009 24.2634 124.748 24.2634C73.4867 24.2634 31.9312 65.819 31.9312 117.08C31.9312 168.342 73.4867 209.897 124.748 209.897Z"
+            fill="url(#color-success)" />
+          <path opacity="0.75"
+            d="M234.16 45.5724C239.594 45.5724 244 41.167 244 35.7325C244 30.2981 239.594 25.8926 234.16 25.8926C228.726 25.8926 224.32 30.2981 224.32 35.7325C224.32 41.167 228.726 45.5724 234.16 45.5724Z"
+            fill="url(#color-success)" />
+          <path opacity="0.54"
+            d="M27.4779 26.0226C34.6638 26.0226 40.4892 20.1972 40.4892 13.0113C40.4892 5.82536 34.6638 0 27.4779 0C20.2919 0 14.4666 5.82536 14.4666 13.0113C14.4666 20.1972 20.2919 26.0226 27.4779 26.0226Z"
+            fill="url(#color-success)" />
+          <path opacity="0.72"
+            d="M15.6615 178.9C19.3564 178.9 22.3518 175.905 22.3518 172.21C22.3518 168.515 19.3564 165.52 15.6615 165.52C11.9665 165.52 8.97119 168.515 8.97119 172.21C8.97119 175.905 11.9665 178.9 15.6615 178.9Z"
+            fill="url(#color-success)" />
+          <path
+            d="M83.5851 234.181C86.3803 234.181 88.6462 231.915 88.6462 229.12C88.6462 226.325 86.3803 224.059 83.5851 224.059C80.7899 224.059 78.5239 226.325 78.5239 229.12C78.5239 231.915 80.7899 234.181 83.5851 234.181Z"
+            fill="url(#color-success)" />
+          <path
+            d="M160.849 224.559C162.277 224.559 163.434 223.402 163.434 221.974C163.434 220.547 162.277 219.389 160.849 219.389C159.421 219.389 158.264 220.547 158.264 221.974C158.264 223.402 159.421 224.559 160.849 224.559Z"
+            fill="url(#color-success)" />
+          <path
+            d="M216.891 211.266C218.703 211.266 220.171 209.797 220.171 207.986C220.171 206.174 218.703 204.706 216.891 204.706C215.08 204.706 213.611 206.174 213.611 207.986C213.611 209.797 215.08 211.266 216.891 211.266Z"
+            fill="url(#color-success)" />
+          <path opacity="0.93"
+            d="M223.43 146.665C225.241 146.665 226.71 145.197 226.71 143.385C226.71 141.574 225.241 140.105 223.43 140.105C221.618 140.105 220.15 141.574 220.15 143.385C220.15 145.197 221.618 146.665 223.43 146.665Z"
+            fill="url(#color-success)" />
+          <path opacity="0.76"
+            d="M140.409 8.77553C142.221 8.77553 143.689 7.30704 143.689 5.49555C143.689 3.68407 142.221 2.21558 140.409 2.21558C138.598 2.21558 137.129 3.68407 137.129 5.49555C137.129 7.30704 138.598 8.77553 140.409 8.77553Z"
+            fill="url(#color-success)" />
+          <path
+            d="M3.27998 100.81C5.09146 100.81 6.55996 99.3419 6.55996 97.5305C6.55996 95.719 5.09146 94.2505 3.27998 94.2505C1.4685 94.2505 0 95.719 0 97.5305C0 99.3419 1.4685 100.81 3.27998 100.81Z"
+            fill="url(#color-success)" />
+          <path
+            d="M151.053 85.2361C153.746 83.1725 157.743 82.9988 160.589 84.8668C161.718 85.6054 162.674 86.5611 163.695 87.4083C165.368 88.8419 166.367 90.9272 166.584 93.0993V94.1854C166.475 95.4018 166.193 96.5965 165.606 97.6826C165.15 98.5949 164.455 99.3552 163.782 100.115C150.51 115.538 137.26 130.939 123.988 146.339C123.119 147.338 122.293 148.425 121.164 149.141C118.731 150.814 115.408 151.031 112.758 149.706C111.519 149.141 110.564 148.164 109.564 147.252C103.743 141.908 97.8999 136.586 92.0785 131.243C91.2748 130.526 90.4711 129.766 89.9063 128.832C89.1461 127.659 88.7551 126.29 88.603 124.9V123.814C88.7334 122.641 89.0157 121.49 89.5588 120.447C90.2756 119.057 91.4486 117.992 92.4695 116.819C93.5121 115.646 94.8589 114.734 96.3577 114.278C98.1389 113.778 100.094 113.778 101.832 114.452C102.809 114.821 103.7 115.386 104.503 116.081C107.957 119.057 111.411 122.033 114.886 125.009C126.247 112.432 137.585 99.8331 148.946 87.2562C149.641 86.5611 150.271 85.8226 151.053 85.2361Z"
+            fill="white" />
+          <defs>
+            <linearGradient id="color-success">
+              <stop stop-color="rgb(var(--ion-color-success-rgb))" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div> -->
+      <h5 [ngClass]="'text-' + kategori.kode" class="mt-0 text-success"><b>Setujui Permintaan</b></h5>
+      <div class="ion-margin-bottom"><b>Apakah Anda Yakin Ingin Menyetujui <br> Permintaan Ini?</b></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-success-tint text-success ion-padding rounded-xl text-center" (click)="setujuModal.dismiss()">
+          <b>Batal</b>
+        </div>
+        <div class="bg-success text-on-success ion-padding rounded-xl text-center" (click)="setuju(setujuModal)">
+          <b>Setuju</b>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #tolakModal class="modal-konfirmasi">
+  <ng-template>
+    <div class="ion-padding ion-margin bg-background rounded-xl text-center" style="color: var(--ion-text-color, #000)">
+      <!-- <div class="ion-padding flex items-center justify-center">
+        <svg width="100%" height="100%" viewBox="0 0 246 237" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M125.769 211.535C177.43 211.535 219.31 169.655 219.31 117.994C219.31 66.3324 177.43 24.4526 125.769 24.4526C74.1078 24.4526 32.228 66.3324 32.228 117.994C32.228 169.655 74.1078 211.535 125.769 211.535Z"
+            fill="url(#color-danger)" />
+          <path opacity="0.75"
+            d="M236.035 45.9282C241.512 45.9282 245.952 41.4883 245.952 36.0114C245.952 30.5346 241.512 26.0947 236.035 26.0947C230.558 26.0947 226.118 30.5346 226.118 36.0114C226.118 41.4883 230.558 45.9282 236.035 45.9282Z"
+            fill="url(#color-danger)" />
+          <path opacity="0.54"
+            d="M27.74 26.2257C34.982 26.2257 40.8529 20.3549 40.8529 13.1128C40.8529 5.87082 34.982 0 27.74 0C20.498 0 14.6272 5.87082 14.6272 13.1128C14.6272 20.3549 20.498 26.2257 27.74 26.2257Z"
+            fill="url(#color-danger)" />
+          <path opacity="0.72"
+            d="M15.8314 180.296C19.5551 180.296 22.5739 177.278 22.5739 173.554C22.5739 169.83 19.5551 166.811 15.8314 166.811C12.1076 166.811 9.08887 169.83 9.08887 173.554C9.08887 177.278 12.1076 180.296 15.8314 180.296Z"
+            fill="url(#color-danger)" />
+          <path
+            d="M84.2855 236.009C87.1025 236.009 89.3861 233.726 89.3861 230.909C89.3861 228.092 87.1025 225.808 84.2855 225.808C81.4685 225.808 79.1848 228.092 79.1848 230.909C79.1848 233.726 81.4685 236.009 84.2855 236.009Z"
+            fill="url(#color-danger)" />
+          <path
+            d="M162.152 226.311C163.591 226.311 164.757 225.145 164.757 223.706C164.757 222.267 163.591 221.101 162.152 221.101C160.714 221.101 159.547 222.267 159.547 223.706C159.547 225.145 160.714 226.311 162.152 226.311Z"
+            fill="url(#color-danger)" />
+          <path
+            d="M218.632 212.914C220.457 212.914 221.937 211.434 221.937 209.608C221.937 207.783 220.457 206.303 218.632 206.303C216.806 206.303 215.326 207.783 215.326 209.608C215.326 211.434 216.806 212.914 218.632 212.914Z"
+            fill="url(#color-danger)" />
+          <path opacity="0.93"
+            d="M225.221 147.81C227.047 147.81 228.527 146.33 228.527 144.504C228.527 142.678 227.047 141.198 225.221 141.198C223.395 141.198 221.916 142.678 221.916 144.504C221.916 146.33 223.395 147.81 225.221 147.81Z"
+            fill="url(#color-danger)" />
+          <path opacity="0.76"
+            d="M141.553 8.84454C143.378 8.84454 144.858 7.36459 144.858 5.53897C144.858 3.71335 143.378 2.2334 141.553 2.2334C139.727 2.2334 138.247 3.71335 138.247 5.53897C138.247 7.36459 139.727 8.84454 141.553 8.84454Z"
+            fill="url(#color-danger)" />
+          <path
+            d="M3.35367 101.597C5.17929 101.597 6.65924 100.117 6.65924 98.2914C6.65924 96.4658 5.17929 94.9858 3.35367 94.9858C1.52805 94.9858 0.0480957 96.4658 0.0480957 98.2914C0.0480957 100.117 1.52805 101.597 3.35367 101.597Z"
+            fill="url(#color-danger)" />
+          <path
+            d="M96.2157 158.098L90.918 152.823C87.9408 149.867 87.9408 145.051 90.8961 142.074L144.595 88.1121C147.551 85.1349 152.367 85.1349 155.344 88.0902L160.642 93.366C163.619 96.3213 163.619 101.137 160.663 104.115L106.964 158.076C103.987 161.054 99.1929 161.054 96.2157 158.098Z"
+            fill="white" />
+          <path
+            d="M90.7653 93.5192L96.0411 88.2215C98.9964 85.2443 103.812 85.2443 106.79 88.1996L160.751 141.899C163.729 144.854 163.729 149.67 160.773 152.647L155.498 157.945C152.542 160.922 147.726 160.922 144.749 157.967L90.7872 104.268C87.81 101.312 87.81 96.4964 90.7653 93.5192Z"
+            fill="white" />
+          <defs>
+            <linearGradient id="color-danger">
+              <stop stop-color="rgb(var(--ion-color-danger-rgb))" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div> -->
+      <h5 [ngClass]="'text-' + kategori.kode" class="mt-0 text-danger"><b>Tolak Permintaan</b></h5>
+      <div class="ion-margin-bottom"><b>Apakah Anda Yakin Ingin Menolak <br> Permintaan Ini?</b></div>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl"
+        style="--full-highlight-height: 1px; --highlight-background: var(--border-color);">
+        <ion-label position="floating" color="danger">Catatan </ion-label>
+        <ion-textarea [(ngModel)]="catatanTolak" required="false" placeholder="Tulis Catatan..."
+          class="first-uppercase"></ion-textarea>
+      </ion-item>
+      <div class="grid grid-cols-2 gap-4">
+        <button class="bg-danger-tint text-danger ion-padding rounded-xl text-center" style="font-size: 12pt;"
+          (click)="tolakModal.dismiss()">
+          <b>Batal</b>
+        </button>
+        <button class="bg-danger text-on-danger ion-padding rounded-xl text-center relative" style="font-size: 12pt;"
+          (click)="tolak(tolakModal)">
+          <b>Tolak</b>
+          <!-- <b [class.opacity-0]="tolakLoading">Tolak</b> -->
+          <!-- <ion-spinner [class.opacity-0]="!tolakLoading" color="light" class="absolute"></ion-spinner> -->
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

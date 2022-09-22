@@ -1,0 +1,118 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">{{isUbah? 'Ubah' : 'Lengkapi'}} Profil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="biodataForm" (submit)="simpan()">
+    <ion-list class="ion-no-margin item-opacity-100">
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl">
+        <ion-label position="floating" color="medium">Nama Lengkap <span *ngIf="!isUbah">(Otomatis Terisi)</span></ion-label>
+        <ion-input formControlName="namaLengkap" class="-mb-2 ion-text-capitalize"></ion-input>
+      </ion-item>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl">
+        <ion-label position="floating" color="medium">Email  <span *ngIf="!isUbah">(Otomatis Terisi)</span></ion-label>
+        <ion-input formControlName="email" class="-mb-2"></ion-input>
+      </ion-item>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl ">
+        <ion-label position="floating" color="medium">No Tlp</ion-label>
+        <div slot="start" class="border-r pr-3 mr-3" style="border-color: var(--ion-color-light-shade);">+62</div>
+        <ion-input formControlName="noTlp" class="-mb-2"></ion-input>
+      </ion-item>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl">
+        <ion-label position="floating" color="medium">Nomer Pegawai</ion-label>
+        <ion-input formControlName="noPegawai" class="-mb-2"></ion-input>
+      </ion-item>
+      
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl" style="height: 57px;">
+        <ion-label position="floating" color="medium">Wilayah Kerja</ion-label>
+        <ion-icon slot="end" name="chevron-down"></ion-icon>
+        <ion-input formControlName="organisasiNama" class="-mb-2"
+          (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Wilayah Kerja', 'organisasi', 'organisasiNama')"></ion-input>
+      </ion-item>
+
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl" style="height: 57px;">
+        <ion-label position="floating" color="medium">Fungsi</ion-label>
+        <ion-icon slot="end" name="chevron-down"></ion-icon>
+        <ion-input formControlName="fungsiNama" class="-mb-2"
+          (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Fungsi', 'fungsi', 'fungsiNama')"></ion-input>
+      </ion-item>
+      <!-- <ion-item *ngIf="biodataForm.get('fungsiJenis').value as fj" fill="outline"
+        class="ion-margin-bottom item-rounded-xl item-opacity-100" style="height: 57px;">
+        <ion-label position="floating" color="medium" class="ion-text-capitalize">{{fj}} <span
+            class="text-medium ml-2">Terisi Otomatis</span>
+        </ion-label>
+        <ion-input formControlName="organisasi" class="-mb-2"></ion-input>
+      </ion-item> -->
+     
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl" style="height: 57px;">
+        <ion-label position="floating" color="medium">Jabatan</ion-label>
+        <ion-icon slot="end" name="chevron-down"></ion-icon>
+        <ion-input formControlName="jabatanNama" class="-mb-2"
+          (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Jabatan', 'jabatan', 'jabatanNama')"></ion-input>
+      </ion-item>
+    </ion-list>
+    <button type="submit" [class.opacity-50]="biodataForm.invalid"
+      class="w-full ion-margin-bottom bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative">
+      <h6 [class.opacity-0]="isLoading" class="ion-no-margin text-bold">Simpan Profil</h6>
+      <ion-spinner [class.opacity-0]="!isLoading" color="light" class="absolute"></ion-spinner>
+    </button>
+  </form>
+</ion-content>
+
+<ion-modal #pilihanModal (didDismiss)="dismissPilihan()" class="modal-alert-custom" style="--max-height: 50%;">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar style="margin-bottom: -8px;">
+        <ion-title class="text-center ion-text-capitalize"><b>{{pilihanTitle}}</b></ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar [formControl]="pilihanPencarian" mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="ion-padding-top ion-padding-bottom">
+        <div *ngIf="!isPilihanLoading; else pilihanLoading">
+          <ion-radio-group *ngIf="pilihan?.length > 0; else noPilihan" [(ngModel)]="terpilih">
+            <ion-item *ngFor="let pi of pilihan; let l = last" [lines]="l? 'none' : ''" class="">
+              <ion-label>
+                <div style="white-space: break-spaces;">{{pi.nama}}</div>
+                <!-- <ng-container [ngSwitch]="pilihanFcn">
+                  <small *ngSwitchCase="'fungsi'">{{pi.organisasi?.nama}} {{pi.jenis == 'wilayah'? ' - ' +
+                    pi.organisasi.zona?.nama : ''}}</small>
+                  <small *ngSwitchDefault>-</small>
+                </ng-container> -->
+              </ion-label>
+              <ion-radio mode="md" slot="end" [value]="pi" class="ml-1"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+      </div>
+      <ng-template #pilihanLoading>
+        <div class="flex items-center justify-center gap-3">
+          <ion-spinner color="primary"></ion-spinner>
+          <div>Memuat data...</div>
+        </div>
+      </ng-template>
+      <ng-template #noPilihan>
+        <div class="ion-text-capitalize text-center text-medium">
+          Data {{pilihanFcn}} Kosong
+        </div>
+      </ng-template>
+    </ion-content>
+    <ion-footer>
+      <div class="flex modal-button">
+        <button type="button" (click)="pilihanModal.dismiss()">
+          <span class="alert-button-inner sc-ion-alert-ios">Batal</span>
+        </button>
+        <button type="button" (click)="pilihPilihan(pilihanModal)">
+          <span class="alert-button-inner sc-ion-alert-ios">Pilih</span>
+        </button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

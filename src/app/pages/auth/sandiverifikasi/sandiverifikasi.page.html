@@ -1,0 +1,69 @@
+<ion-header class="ion-no-border drop-shadow-sm">
+	<ion-toolbar>
+		<ion-buttons slot="start" class="-mr-4">
+			<ion-back-button></ion-back-button>
+		</ion-buttons>
+		<ion-title class="text-bold">
+			Verifikasi Kode
+		</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+	<div class="flex items-center justify-center ion-margin-bottom w-full" style="margin-top:80px;">
+		<img src="assets/auth/verifikasi.png" class="h-full object-cover">
+	</div>
+	<div class="w-full text-center ion-margin-bottom">
+		<div class="text-medium text-bold text-sm" style="width: 280px; margin: auto;">Masukan Kode Verifikasi Yang Telah
+			Dikirim Ke Email Anda.</div>
+	</div>
+	<div class="flex justify-center items-center w-full">
+		<form id="kodeForm" [formGroup]="kodeForm" (submit)="kirim()">
+			<ion-list class="bg-none custom-input-verifikasi flex gap-2">
+				<ion-item class="ion-margin-bottom ">
+					<ion-input #otp1 formControlName="kode1" type="number"
+						(ionInput)="onOtpInput($event, otp2, null)"></ion-input>
+				</ion-item>
+				<ion-item class="ion-margin-bottom ">
+					<ion-input #otp2 formControlName="kode2" type="number"
+						(ionInput)="onOtpInput($event, otp3, otp1)"></ion-input>
+				</ion-item>
+				<ion-item class="ion-margin-bottom ">
+					<ion-input #otp3 formControlName="kode3" type="number"
+						(ionInput)="onOtpInput($event, otp4, otp2)"></ion-input>
+				</ion-item>
+				<ion-item class="ion-margin-bottom ">
+					<ion-input #otp4 formControlName="kode4" type="number"
+						(ionInput)="onOtpInput($event, null, otp3)"></ion-input>
+				</ion-item>
+			</ion-list>
+		</form>
+	</div>
+
+
+	<div *ngIf="countdownKode > 0; else kirimUlang" class="w-full text-center ion-margin-bottom">
+		<small class="text-medium text-bold">Kirim Ulang Kode Dalam {{countdownKode | date:'mm:ss':'UTC'}}</small>
+	</div>
+
+	<ng-template #kirimUlang>
+		<div class="w-full text-center ion-margin-bottom" (click)="kirimulangkode()">
+			<small class="text-primary text-bold">Kirim Ulang Kode</small>
+		</div>
+	</ng-template>
+
+
+
+</ion-content>
+<ion-footer>
+	<ion-toolbar>
+		<div class="ion-padding">
+			<!-- <button [class.opacity-50]="countdownKode < 1000" -->
+			<button form="kodeForm" type="submit" [disabled]="countdownKode < 1000 || emailInvalid || kodeForm.invalid" 
+			[class.opacity-50]="countdownKode < 1000 || emailInvalid || kodeForm.invalid"
+				class="w-full bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative">
+				<h6 [class.opacity-0]="isLoading" class="ion-no-margin text-bold">Verifikasi Kode</h6>
+				<ion-spinner [class.opacity-0]="!isLoading" color="light" class="absolute"></ion-spinner>
+			</button>
+		</div>
+	</ion-toolbar>
+</ion-footer>

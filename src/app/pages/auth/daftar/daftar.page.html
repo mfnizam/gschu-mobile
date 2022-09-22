@@ -1,0 +1,68 @@
+<ion-header class="ion-no-border drop-shadow-sm">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Daftar
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="flex justify-between mt-2">
+    <div><img src="assets/icon/GSCHU-Logo.webp" class="h-full object-cover" style="height: 30px;"></div>
+    <div class="text-bold text-rdp" style="font-size: 24px;" (click)="goBack()">Masuk</div>
+  </div>
+  <h2 class="text-bold" style="font-size:40px; margin: 40px 0px">Daftar <br>Akun Kamu</h2>
+
+  <form [formGroup]="daftarForm" (submit)="daftar()">
+    <ion-list class="">
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl">
+        <ion-icon slot="start" name="person" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating">Nama Lengkap</ion-label>
+        <ion-input formControlName="namaLengkap" class="-mb-2 ion-text-capitalize"></ion-input>
+      </ion-item>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl">
+        <ion-icon slot="start" name="mail" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating">Email {{daftarForm.get('email').errors?.tidaktersedia? 'Sudah Terdaftar' : ''}}</ion-label>
+        <ion-input formControlName="email" class="-mb-2"></ion-input>
+      </ion-item>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl ">
+        <ion-icon slot="start" name="key" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating">Kata Sandi</ion-label>
+        <ion-input formControlName="sandi" [type]="showSandi? 'text' : 'password'" class="-mb-2"></ion-input>
+        <ion-icon slot="end" color="medium" [name]="showSandi? 'eye-off' : 'eye'"
+          (click)="showSandi = !showSandi"></ion-icon>
+      </ion-item>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl ">
+        <ion-icon slot="start" name="key" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating">
+          Konfirmasi Kata Sandi
+          {{daftarForm.get('confSandi').errors?.tidaksesuai? 'Tidak Sesuai' : ''}}
+        </ion-label>
+        <ion-input formControlName="confSandi" [type]="showSandi? 'text' : 'password'" class="-mb-2"></ion-input>
+      </ion-item>
+    </ion-list>
+    <button type="submit" [class.opacity-50]="daftarForm.invalid"
+      class="w-full ion-margin-bottom bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative">
+      <h5 [class.opacity-0]="isLoading" class="ion-no-margin text-bold">Daftar</h5>
+      <ion-spinner [class.opacity-0]="!isLoading" color="light" class="absolute"></ion-spinner>
+    </button>
+  </form>
+
+  <!-- <div class=" ion-margin-bottom w-full flex items-center justify-center gap-3">
+    <div class="w-full">
+      <hr style="border-top: 2px solid var(--ion-color-light) !important; width: 100%;">
+    </div>
+    <div class="text-medium text-bold text-center bg-background">Atau</div>
+    <div class="w-full">
+      <hr style="border-top: 2px solid var(--ion-color-light) !important; width: 100%;">
+    </div>
+  </div>
+
+  <div class="w-full text-medium flex items-center justify-center border border-solid rounded-xl ion-padding relative">
+    <img src="assets/google-logo.png" class="mr-4" style="height: 22px;">
+    <div class="ion-no-margin"> Daftar dengan Google</div>
+  </div> -->
+</ion-content>

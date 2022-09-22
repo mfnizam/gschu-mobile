@@ -1,0 +1,67 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Notifikasi
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="">
+  <ion-refresher slot="fixed" (ionRefresh)="ambilNotifikasi($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="!isLoading; else notifikasiLoading">
+    <div *ngIf="notifikasi && notifikasi.length > 0; else noNotifikasi">
+      <ion-list class="pt-0">
+        <ng-container *ngFor="let not of notifikasi">
+          <ion-item *ngIf="not.jenis == 'permintaan'" [class.bg-light]="!not.dibaca" (click)="detail(not)">
+            
+            <div class="flex items-start gap-3 ion-margin-top ion-margin-bottom">
+              <div [ngClass]="'bg-' + not.diperuntukkan?.kategori?.kode + ' text-on-' + not.diperuntukkan?.kategori?.kode" class="flex-shrink-0 flex p-2 rounded-lg rounded-lg" style="width: 36px; height: 36px;">
+                <img [src]="'assets/icon/' + not.diperuntukkan?.kategori?.kode + '.png'" class="mb-px"
+                  style="max-width: 20px; max-height: 20px;">
+              </div>
+              <div>
+                <h5 class="ion-no-margin flex items-start truncate-2 text-bold">
+                  <span *ngIf="!not.dibaca" class="bg-danger rounded-full" style="width: 8px; height: 8px; margin-top: 6px; display: inline-block;"></span> 
+                  <span> {{not.nama}}</span>
+                </h5>
+                <div class="truncate-2">{{not.konten}}</div>
+              </div>
+            </div>
+            <ion-icon slot="end" name="chevron-forward"></ion-icon>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+    </div>
+  </div>
+  <ng-template #notifikasiLoading>
+    <div id="loading-notifikasi" class="ion-padding">
+      <div class="bg-background rounded-xl flex gap-3" style="padding-bottom: 4px;">
+        <div class="bg-light rounded-lg" style="width: 36px; height: 36px;"></div>
+        <div class="flex-1">
+          <div class="bg-light rounded-md" style="width: 80%; height: 16px; margin-top: 2px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+        </div>
+      </div>
+      <hr class="bg-light ion-margin-top ion-margin-bottom">
+      <div class="bg-background rounded-xl flex gap-3" style="padding-bottom: 4px;">
+        <div class="bg-light rounded-lg" style="width: 36px; height: 36px;"></div>
+        <div class="flex-1">
+          <div class="bg-light rounded-md" style="width: 80%; height: 16px; margin-top: 2px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 8px;"></div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noNotifikasi>
+    <div class="ion-margin ion-padding border rounded-xl text-center text-medium">Tidak ada notifikasi untuk anda.
+    </div>
+  </ng-template>
+</ion-content>

@@ -1,0 +1,438 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-capitalize"><b>{{jenis.nama}}</b></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="flex items-center gap-3">
+    <ion-searchbar mode="ios" class="ion-no-padding ion-margin-bottom searchbar-custom" style="height: 36px;">
+    </ion-searchbar>
+  </div>
+  <div *ngIf="jenis.kode != 'zona' && jenis.kode != 'wilayah'" slot="fixed"
+    class="ion-text-capitalize bg-primary ion-padding rounded-full flex items-center gap-2"
+    style="bottom: 16px; right: 16px;" (click)="bukaTambah(tambahModal)">
+    <ion-icon name="add" style="font-size: 14pt;"></ion-icon> <span>Tambah {{jenis.nama}}</span>
+  </div>
+  <div *ngIf="!isLoading; else masterLoading" style="margin-bottom: 72px;">
+    <div *ngIf="master && master.length > 0; else noMaster">
+      <ng-container *ngFor="let ma of master;">
+        <div *ngIf="ma._id != 'divider'; else masterDevider"
+          class="bg-background rounded-xl drop-shadow-md ion-padding ion-margin-bottom"  [class.opacity-50]="ma.wilayah?.delete">
+          <div
+            *ngIf="jenis.kode == 'zona' || jenis.kode == 'wilayah' || jenis.kode == 'fungsi' || jenis.kode == 'jabatan'">
+            <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}</div>
+            <div class="mt-1">
+              <ng-container [ngSwitch]="jenis.kode">
+                <small *ngSwitchCase="'wilayah'">{{ma.zona?.nama}}</small>
+                <small *ngSwitchCase="'fungsi'">{{ma.organisasi?.nama + (ma.tipe == 'wilayah'? ' - ' +
+                  ma.organisasi.zona?.nama : '')}}</small>
+                <small *ngSwitchCase="'jabatan'">
+                  {{ma.fungsi?.nama}} - {{ma.fungsi?.organisasi?.nama + (ma.fungsi?.tipe == 'wilayah'? ' - ' + ma.fungsi.organisasi.zona?.nama : '')}}
+                </small>
+                <!-- <small *ngSwitchDefault>-</small> -->
+              </ng-container>
+            </div>
+            <hr *ngIf="(jenis.kode == 'fungsi' && (ma.ttdAtasan || ma.penyetuju))" class="bg-light">
+            <div *ngIf="(jenis.kode == 'fungsi' && ma.ttdAtasan) || (jenis.kode == 'jabatan' && ma.atasan?._id && !ma.fungsi?.ttdAtasan)">
+              <div class="-mt-1">
+                <small class="text-medium">TTD Diketahui (Atasan) <span *ngIf="!ma.atasan?._id"> Aktif Namun Belum Memilih Atasan</span></small>
+                <div *ngIf="ma.atasan?._id" class=" flex gap-3 items-center mt-1" style="line-height: 1;">
+                  <div
+                    class="flex-shrink-0 bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+                    style="height: 40px; width: 40px;">
+                    <b *ngIf="!ma.atasan?.foto" style="font-size: 14pt; margin-bottom: -2px;">{{ma.atasan?.inisial}}</b>
+                    <img *ngIf="ma.atasan?.foto" [src]="ma.atasan?.foto" class="h-full w-full object-cover">
+                  </div>
+                  <div class="flex-1 ion-text-capitalize">
+                    <div><b>{{ma.atasan?.namaLengkap}}</b></div>
+                    <div class="text-medium"><small>{{ma.atasan?.jabatan?.nama}}</small></div>
+                    <!-- <div><small>{{ma.atasan?.fungsi?.nama}} - {{ma.atasan?.fungsi?.organisasi?.nama}}</small></div> -->
+                  </div>
+                  <div class="text-medium" (click)="ubahMaster(null, tambahModal, ma._id)"><b>Ubah</b></div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="jenis.kode == 'fungsi' && ma.penyetuju?._id">
+              <div class="-mt-1">
+                <small class="text-medium">Penyetuju</small>
+                <div class="flex gap-3 items-center mt-1" style="line-height: 1;">
+                  <div
+                    class="flex-shrink-0 bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+                    style="height: 40px; width: 40px;">
+                    <b *ngIf="!ma.penyetuju?.foto" style="font-size: 14pt; margin-bottom: -2px;">{{ma.penyetuju?.inisial}}</b>
+                    <img *ngIf="ma.penyetuju?.foto" [src]="ma.penyetuju?.foto" class="h-full w-full object-cover">
+                  </div>
+                  <div class="flex-1 ion-text-capitalize" style="min-width: 0;">
+                    <div><b>{{ma.penyetuju?.namaLengkap}}</b></div>
+                    <div class="text-medium truncate"><small>{{ma.penyetuju?.jabatan?.nama}}</small></div>
+                    <!-- <div><small>{{ma.penyetuju?.fungsi?.nama}} - {{ma.penyetuju?.fungsi?.organisasi?.nama}}</small></div> -->
+                  </div>
+                  <div class="text-medium" (click)="ubahMaster(null, tambahModal, ma._id)"><b>Ubah</b></div>
+                </div>
+              </div>
+            </div>
+            <!-- <small class="text-medium">0 Karyawan - 0 Permintaan</small> -->
+          </div>
+          <div *ngIf="jenis.kode === 'kategori'">
+            <div><b>{{ma.nama}} ({{ma.kode}})</b></div>
+            <small class="text-medium">0 Permintaan</small>
+          </div>
+          <div class="absolute right-0 top-0 ion-padding" (click)="bukaAksi(aksiModal, ma._id)">
+            <ion-icon name="ellipsis-vertical"
+              style="font-size: 20px; align-self: flex-start; margin-right: -8px;">
+            </ion-icon>
+          </div>
+        </div>
+        <ng-template #masterDevider>
+          <div class="ion-padding-top ion-margin-bottom">
+            <div class="ion-padding-start ion-padding-end pt-2 pb-2 bg-light ">
+              <div><b>{{ma.nama}}</b></div>
+              <small *ngIf="ma.disabled" class="text-warning -mt-1">Wilayah kerja ini telah di hapus</small>
+            </div>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-template #masterLoading>
+    <div id="loading-master">
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 2px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 2px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 2px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noMaster>
+    <div class="ion-padding border rounded-xl text-center text-medium">
+      Data {{jenis.nama}} Kosong
+    </div>
+  </ng-template>
+</ion-content>
+
+<ion-modal #aksiModal class="items-end" style="--height: 168px;" (willDismiss)="dismissAksi()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start" class="-mr-4">
+          <ion-button (click)="aksiModal.dismiss()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title><b>Aksi {{jenis.nama}}</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item (click)="ubahMaster(aksiModal, tambahModal, aksiId)">
+          <ion-label>Ubah {{jenis.nama}}</ion-label>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-item>
+        <ion-item lines="none" (click)="hapusMaster(aksiModal, aksiId)">
+          <ion-label color="danger">Hapus {{jenis.nama}}</ion-label>
+          <ion-icon color="danger" name="trash-outline"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #tambahModal class="modal-bottom-sheet-custom items-end"
+  style="--max-height: 90%; --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);" (didDismiss)="dismissTambah()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start" class="-mr-4">
+          <ion-button (click)="tambahModal.dismiss()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title><b>{{masterId? 'Ubah' : 'Tambah'}} {{jenis.nama}}</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <div class="inner-content h-full flex flex-col ion-padding">
+      <form [formGroup]="tambahForm" (submit)="simpanTambah(tambahModal)">
+        <div class="flex-1 ion-margin-bottom">
+          <ng-container [ngSwitch]="jenis.kode">
+            <ng-container *ngSwitchCase="'jabatan'">
+              <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+                style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+                <ion-label position="floating" color="medium">Wilayah Kerja</ion-label>
+                <ion-icon slot="end" name="chevron-down"></ion-icon>
+                <ion-input formControlName="organisasiNama" class="-mb-2"
+                  (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Wilayah Kerja', 'organisasi', 'organisasiNama')">
+                </ion-input>
+              </ion-item>
+              <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl" style="height: 57px;">
+                <ion-label position="floating" color="medium">Fungsi</ion-label>
+                <ion-icon slot="end" name="chevron-down"></ion-icon>
+                <ion-input formControlName="fungsiNama" class="-mb-2"
+                  (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Fungsi', 'fungsi', 'fungsiNama')"></ion-input>
+              </ion-item>
+              <ng-container *ngTemplateOutlet="namaMaster"></ng-container>
+              <div *ngIf="tambahForm.get('tersediaAtasan').value; else nonAtasan" class="ion-padding-start ion-padding-end border rounded-xl ion-margin-bottom">
+                <ion-item style="--padding-start: 0; --inner-padding-end: 0;" lines="none">
+                  <ion-label style="white-space: normal;">
+                    <div class="truncate">TTD Diketahui (Atasan)</div>
+                    <small class="text-medium">Pemilihan atasan pada data jabatan hanya tersedia jika atasan pada fungsi jabatan ini di tidak diaktifkan</small>
+                  </ion-label>
+                  <!-- <ion-toggle formControlName="ttdAtasan" mode="ios" style="transform: scale(0.8); margin-right: -4px;">
+                  </ion-toggle> -->
+                </ion-item>
+                <ng-container>
+                  <div *ngIf="tambahForm.get('atasanData').value as ad; else noAtasan"
+                    class="flex items-center gap-3 ion-margin-bottom" style="min-height: 56px;">
+                    <div
+                      class="flex-shrink-0 bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+                      style="height: 50px; width: 50px;">
+                      <b *ngIf="!ad.foto" style="font-size: 16pt;">{{ad.inisial}}</b>
+                      <img *ngIf="ad.foto" [src]="ad.foto" class="h-full w-full object-cover">
+                    </div>
+                    <div class="flex-1" style="line-height: 1;">
+                      <h6 class="ion-no-margin ion-text-capitalize"><b>{{ad.namaLengkap}}</b></h6>
+                      <div class="text-medium"><small>{{ad.jabatan?.nama}}</small></div>
+                      <div *ngIf="ad.fungsi as fu" class="text-medium whitespace-pre-wrap truncate-2"><small>{{fu.nama}}
+                          - {{fu.organisasi?.nama}} {{fu.tipe == 'wilayah'? ' - ' +
+                          fu.organisasi.zona?.nama : ''}}</small></div>
+                    </div>
+                    <ion-icon name="trash-outline" color="danger" style="font-size: 18pt;"
+                      (click)="hapusForm(['atasan', 'atasanData'])"></ion-icon>
+                  </div>
+                  <ng-template #noAtasan>
+                    <div
+                      class="ion-padding border border-primary rounded-xl text-primary text-center ion-margin-bottom"
+                      (click)="bukaPilihan(pilihanModal, 'Pilih Akun Atasan', 'atasan', 'atasanData', 'user')">Pilih
+                      Akun Atasan</div>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <ng-template #nonAtasan>
+                <div style="margin-top: -12px;">
+                  <small class="text-medium">Untuk jabatan pada fungsi {{tambahForm.get('fungsiNama').value|| 'ini'}}, atasan sesuai dengan fungsi.</small>
+                </div>
+              </ng-template>
+            </ng-container>
+            <ng-container *ngSwitchCase="'fungsi'">
+              <ng-container *ngTemplateOutlet="namaMaster"></ng-container>
+              <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+                style="--highlight-background: var(--border-color); --full-highlight-height: 1px;">
+                <ion-label position="floating" color="medium">Kode Fungsi (No Surat)</ion-label>
+                <ion-input formControlName="kode" class="-mb-2"></ion-input>
+              </ion-item>
+              <!-- <div class="ion-margin-bottom"><small>Kode digunakan untuk nomer surat permintaan</small></div> -->
+              <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+                style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+                <ion-label position="floating" color="medium">Wilayah Kerja</ion-label>
+                <ion-icon slot="end" name="chevron-down"></ion-icon>
+                <ion-input formControlName="organisasiNama" class="-mb-2"
+                  (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Wilayah Kerja', 'organisasi', 'organisasiNama')">
+                </ion-input>
+              </ion-item>
+              <div class="ion-padding-start ion-padding-end border rounded-xl ion-margin-bottom">
+                <ion-item style="--padding-start: 0; --inner-padding-end: 0;" lines="none">
+                  <ion-label style="white-space: normal;">
+                    <div class="truncate">TTD Diketahui (Atasan)</div>
+                    <small class="text-medium">Jika tidak diaktifkan maka pemilihan atasan melalui data jabatan</small>
+                  </ion-label>
+                  <ion-toggle formControlName="ttdAtasan" mode="ios" style="transform: scale(0.8); margin-right: -4px;">
+                  </ion-toggle>
+                </ion-item>
+                <ng-container *ngIf="tambahForm.get('ttdAtasan').value">
+                  <!-- <hr class="bg-light ion-margin-bottom mt-1"> -->
+                  <div *ngIf="tambahForm.get('atasanData').value as ad; else noAtasan"
+                    class="flex items-center gap-3 ion-margin-bottom" style="min-height: 56px;">
+                    <div
+                      class="flex-shrink-0 bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+                      style="height: 50px; width: 50px;">
+                      <b *ngIf="!ad.foto" style="font-size: 16pt;">{{ad.inisial}}</b>
+                      <img *ngIf="ad.foto" [src]="ad.foto" class="h-full w-full object-cover">
+                    </div>
+                    <div class="flex-1" style="line-height: 1;">
+                      <h6 class="ion-no-margin ion-text-capitalize"><b>{{ad.namaLengkap}}</b></h6>
+                      <div class="text-medium"><small>{{ad.jabatan?.nama}}</small></div>
+                      <div *ngIf="ad.fungsi as fu" class="text-medium whitespace-pre-wrap truncate-2"><small>{{fu.nama}}
+                          - {{fu.organisasi?.nama}} {{fu.tipe == 'wilayah'? ' - ' +
+                          fu.organisasi.zona?.nama : ''}}</small></div>
+                    </div>
+                    <ion-icon name="trash-outline" color="danger" style="font-size: 18pt;"
+                      (click)="hapusForm(['atasan', 'atasanData'])"></ion-icon>
+                  </div>
+                  <ng-template #noAtasan>
+                    <div
+                      class="ion-padding border border-primary rounded-xl text-primary text-center ion-margin-bottom"
+                      (click)="bukaPilihan(pilihanModal, 'Pilih Akun Atasan', 'atasan', 'atasanData', 'user')">Pilih
+                      Akun Atasan</div>
+                  </ng-template>
+                  <!-- <hr class="bg-light ion-margin-top"> -->
+                </ng-container>
+              </div>
+              <div class="ion-padding-start ion-padding-end border rounded-xl ion-margin-bottom">
+                <ion-item style="--padding-start: 0; --inner-padding-end: 0;" lines="none">
+                  <ion-label style="white-space: normal;">
+                    <div>TTD Penyetuju</div>
+                    <small class="text-medium">Penyetuju wajib diisi. Karyawan tidak dapat mengirimkan permintaan jika fungsi tidak memiliki penyetuju</small>
+                  </ion-label>
+                  <!-- <ion-toggle formControlName="ttdPenyetuju" mode="ios"
+                    style="transform: scale(0.8); margin-right: -4px;"></ion-toggle> -->
+                </ion-item>
+                <!-- <ng-container *ngIf="tambahForm.get('ttdPenyetuju').value"> -->
+                <ng-container>
+                  <!-- <hr class="bg-light ion-margin-bottom mt-1"> -->
+                  <div *ngIf="tambahForm.get('penyetujuData').value as pd; else noPenyetuju"
+                    class="ion-margin-bottom flex items-center gap-3" style="min-height: 56px;">
+                    <div
+                      class="flex-shrink-0 bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+                      style="height: 50px; width: 50px;">
+                      <b *ngIf="!pd.foto" style="font-size: 16pt;">{{pd.inisial}}</b>
+                      <img *ngIf="pd.foto" [src]="pd.foto" class="h-full w-full object-cover">
+                    </div>
+                    <div class="flex-1" style="line-height: 1;">
+                      <h6 class="ion-no-margin ion-text-capitalize"><b>{{pd.namaLengkap}}</b></h6>
+                      <div class="text-medium"><small>{{pd.jabatan?.nama}}</small></div>
+                      <div *ngIf="pd.fungsi as fu" class="text-medium whitespace-pre-wrap truncate-2"><small>{{fu.nama}}
+                          - {{fu.organisasi?.nama}} {{fu.tipe == 'wilayah'? ' - ' +
+                          fu.organisasi.zona?.nama : ''}}</small></div>
+                    </div>
+                    <ion-icon name="trash-outline" color="danger" style="font-size: 18pt;"
+                      (click)="hapusForm(['penyetuju', 'penyetujuData'])"></ion-icon>
+                  </div>
+                  <ng-template #noPenyetuju>
+                    <div
+                      class="ion-padding border border-primary rounded-xl text-primary text-center ion-margin-bottom"
+                      (click)="bukaPilihan(pilihanModal, 'Pilih Akun Penyetuju', 'penyetuju', 'penyetujuData', 'user')">
+                      Pilih Akun Penyetuju</div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'wilayah'">
+              <ng-container *ngTemplateOutlet="namaMaster"></ng-container>
+
+              <ion-item fill="outline" class="ion-margin-top item-rounded-xl"
+                style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+                <ion-label position="floating" color="medium">Zona</ion-label>
+                <ion-icon slot="end" name="chevron-down"></ion-icon>
+                <ion-input formControlName="zonaNama" class="-mb-2"
+                  (ionFocus)="bukaPilihan(pilihanModal, 'Pilih Zona', 'zona', 'zonaNama')"></ion-input>
+              </ion-item>
+            </ng-container>
+            <ng-container *ngSwitchCase="'zona'">
+              <ng-container *ngTemplateOutlet="namaMaster"></ng-container>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #namaMaster>
+            <ion-item *ngIf="jenis.kode != 'atasan' && jenis.kode != 'penyetuju'" fill="outline"
+              class="item-rounded-xl ion-margin-bottom"
+              style="--highlight-background: var(--border-color); --full-highlight-height: 1px;">
+              <ion-label position="floating" color="medium" class="ion-text-capitalize">Nama {{jenis.nama}}</ion-label>
+              <!-- <ion-label position="floating" [color]="tambahForm.get('nama').errors? 'danger' : 'medium'" class="ion-text-capitalize">
+              Nama {{jenis.nama}} {{tambahForm.get('nama').errors?.tidaktersedia? 'Sudah Digunakan' : ''}}
+            </ion-label> -->
+              <ion-input formControlName="nama" class="-mb-2"></ion-input>
+            </ion-item>
+          </ng-template>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-primary-tint text-primary ion-padding rounded-xl text-center" (click)="tambahModal.dismiss()">
+            <b>Batal</b>
+          </div>
+          <button type="submit"
+            class="bg-primary text-on-primary ion-padding rounded-xl flex items-center justify-center relative"
+            style="font-size: initial;">
+            <b [class.opacity-0]="isTambahLoading">Simpan</b>
+            <ion-spinner [class.opacity-0]="!isTambahLoading" class="absolute" color="light"></ion-spinner>
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- TODO: Pencarian pada modal pilihan belum diimplementasikan -->
+<!-- <ion-modal #pilihanModal (didDismiss)="dismissPilihan()" class="modal-alert-custom"> -->
+<ion-modal #pilihanModal class="modal-alert-custom"
+  style="--max-height: 50%; --max-width: 85%;  --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);"
+  (didDismiss)="dismissPilihan()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar style="margin-bottom: -8px;">
+        <ion-title class="text-center ion-text-capitalize"><b>{{pilihanTitle}}</b></ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="ion-padding-top ion-padding-bottom">
+        <div *ngIf="!isPilihanLoading; else pilihanLoading">
+          <ion-radio-group *ngIf="pilihan?.length > 0; else noPilihan" [(ngModel)]="terpilih">
+            <ion-item *ngFor="let pi of pilihan; let l = last" [lines]="l? 'none' : ''" class="">
+              <ion-label>
+                <div *ngIf="pilihanFcn == 'atasan' || pilihanFcn == 'penyetuju'; else notUser"
+                  class="flex items-center gap-3">
+                  <div
+                    class="flex-shrink-0 bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+                    style="height: 50px; width: 50px;">
+                    <b *ngIf="!pi.foto" style="font-size: 16pt;">{{pi.inisial}}</b>
+                    <img *ngIf="pi.foto" [src]="pi.foto" class="h-full w-full object-cover">
+                  </div>
+                  <div class="flex-1" style="line-height: 1;">
+                    <h6 class="ion-no-margin ion-text-capitalize"><b>{{pi.namaLengkap}}</b></h6>
+                    <div class="text-medium"><small>{{pi.jabatan?.nama}}</small></div>
+                    <div *ngIf="pi.fungsi as fu" class="text-medium whitespace-pre-wrap truncate-2"><small>{{fu.nama}} -
+                        {{fu.organisasi?.nama}} {{fu.tipe == 'wilayah'? ' - ' +
+                        fu.organisasi.zona?.nama : ''}}</small></div>
+                  </div>
+                </div>
+                <ng-template #notUser>
+                  <div style="white-space: break-spaces;">{{pi.nama}}</div>
+                  <ng-container [ngSwitch]="pilihanFcn">
+                    <small *ngSwitchCase="'wilayah'">{{pi.zona?.nama}}</small>
+                    <!-- <small *ngSwitchCase="'fungsi'">{{pi.organisasi?.nama}} {{pi.tipe == 'wilayah'? ' - ' +
+                      pi.organisasi.zona?.nama : ''}}</small> -->
+                    <!-- <small *ngSwitchDefault>-</small> -->
+                  </ng-container>
+                </ng-template>
+              </ion-label>
+              <ion-radio mode="md" slot="end" [value]="pi" class="ml-1"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+      </div>
+      <ng-template #pilihanLoading>
+        <div class="flex items-center justify-center gap-3">
+          <ion-spinner color="primary"></ion-spinner>
+          <div>Memuat data...</div>
+        </div>
+      </ng-template>
+      <ng-template #noPilihan>
+        <div class="ion-text-capitalize text-center text-medium">
+          Data {{pilihanFcn}} Kosong
+        </div>
+      </ng-template>
+    </ion-content>
+    <ion-footer>
+      <div class="flex modal-button">
+        <button type="button" (click)="pilihanModal.dismiss()">
+          <span class="alert-button-inner sc-ion-alert-ios">Batal</span>
+        </button>
+        <button type="button" (click)="pilihPilihan(pilihanModal)">
+          <span class="alert-button-inner sc-ion-alert-ios">Pilih</span>
+        </button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

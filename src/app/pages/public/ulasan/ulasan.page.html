@@ -1,0 +1,168 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Berikan Ulasan
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="ambilPermintaan($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf="!isLoading; else permintaanLoading">
+    <div *ngIf="permintaan as p; else noPermintaan">
+      <div class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <div class="flex items-center justify-center">
+          <div [ngClass]="'text-' + p.kategori.kode"
+            class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
+            style="height: 80px; width: 80px;">
+            <b *ngIf="!p.user.foto" style="font-size: 24pt;">{{p.user.inisial}}</b>
+            <img *ngIf="p.user.foto" [src]="p.user.foto" class="h-full w-full object-cover">
+          </div>
+        </div>
+        <div class="text-center">
+          <h4 class="mb-0 mt-3 ion-text-capitalize"><b>{{p.user.namaLengkap}}</b></h4>
+          <div>{{p.user.jabatan?.nama}}</div>
+        </div>
+        <hr class="bg-light mt-2 mb-2">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1">
+            <small class="text-medium">No Tlp</small>
+            <div><b>{{p.user.kodeNoTlp}} {{p.user.noTlp}}</b></div>
+          </div>
+          <div class="flex-shrink-0 text-right">
+            <small class="text-medium">Fungsi</small>
+            <div><b>{{p.user.fungsi?.nama}}</b></div>
+          </div>
+        </div>
+        <hr class="bg-light mt-2 mb-2">
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <div class="flex-1">
+            <small class="text-medium">Jenis Permintaan</small>
+            <div><b>{{p.kategori.nama}}</b></div>
+          </div>
+          <div [ngClass]="'bg-' + p.kategori.kode" class="flex p-2 rounded-lg">
+            <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px"
+              style="max-width: 20px; max-height: 20px;">
+          </div>
+        </div>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="flex-1">
+            <small class="text-medium">No Surat</small>
+            <div><b>{{p.noSurat}}</b></div>
+          </div>
+          <div class="flex-shrink-0 text-right">
+            <small class="text-medium">Tgl Permintaan</small>
+            <div><b>{{p.createAt | date:'dd MMMM yyyy'}}</b></div>
+          </div>
+        </div>
+
+        <div class="">
+          <small class="text-medium">Status</small>
+          <ng-container [ngSwitch]="p.status">
+            <div *ngSwitchCase="'menungguAtasan'" class="truncate-2">
+              <b>Menunngu Persetujuan Atasan</b>
+            </div>
+            <div *ngSwitchCase="'ditolakAtasan'" class="truncate-2 text-danger">
+              <b>Ditolak Atasan (Revisi)</b>
+            </div>
+            <div *ngSwitchCase="'menungguPenyetuju'" class="truncate-2">
+              <b>Menunggu Persetujuan {{p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM'}}</b>
+            </div> <!-- rubah kata scm sesuaikan dengan nama fungsi penyetuju -->
+            <div *ngSwitchCase="'ditolakPenyetuju'" class="truncate-2 text-danger">
+              <b>{{'Ditolak ' + (p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM') + ' (Revisi)'}}</b>
+            </div>
+            <div *ngSwitchCase="'proses'" class="truncate-2 text-warning"><b>Sedang Diproses</b></div>
+            <div *ngSwitchCase="'selesai'" class="truncate-2 text-success"><b>Selesai</b></div>
+            <div *ngSwitchDefault><b>-</b></div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="ion-padding bg-background drop-shadow-md rounded-xl ion-margin-bottom">
+        <h5 class="ion-text-capitalize text-center mt-0 ion-padding-bottom ion-margin-bottom">
+          <b>Berikan Ulasan & Rating Anda Untuk <br> {{p.kategori.nama}}</b>
+        </h5>
+        <div class="flex items-center justify-center ion-padding-bottom ion-margin-bottom gap-2">
+          <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+            [ngClass]="r <= peringkat? 'text-warning' : 'text-light-shade'" (click)="peringkat = r"
+            style="font-size: 40pt;"></ion-icon>
+        </div>
+        <ion-item fill="outline" class="item-rounded-xl">
+          <!-- <ion-label position="floating">Ulasan </ion-label> -->
+          <ion-textarea [(ngModel)]="ulasan" placeholder="Tulis Ulasan Kamu..." class="first-uppercase"></ion-textarea>
+        </ion-item>
+      </div>
+
+      <button [disabled]="!peringkat" [class.opacity-50]="!peringkat" [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
+        class="w-full flex items-center justify-center text-center rounded-xl ion-padding relative" (click)="kirim()">
+        <h6 class="ion-no-margin text-bold">Kirim Ulasan</h6>
+        <!-- <ion-spinner [class.opacity-0]="!isLoading" color="light" class="absolute"></ion-spinner> -->
+      </button>
+    </div>
+  </div>
+
+  <ng-template #permintaanLoading>
+    <div class="skeleton">
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 344px;">
+        <div class="flex flex-col items-center" style="margin-bottom: 30px;">
+          <div class="bg-light rounded-full" style="height: 80px; width: 80px;"></div>
+          <div class="bg-light rounded-md mt-3" style="width: 50%; height: 18px;"></div>
+          <div class="bg-light rounded-md mt-2" style="width: 30%; height: 14px;"></div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex-1" style="direction: rtl;">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3" style="margin-top: 26px;">
+          <div class="flex-1">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="bg-light rounded-lg" style="height: 36px; width: 36px;"></div>
+        </div>
+        <div class="flex gap-3" style="margin-top: 18px;">
+          <div class="flex-1">
+            <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex-1" style="direction: rtl;">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 70%; height: 14px; margin-top: 6px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md">
+        <div class="flex-1 ion-margin-bottom">
+          <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 9px;"></div>
+        </div>
+        <div class="flex-1">
+          <div class="bg-light rounded-md" style="width: 30%; height: 12px;"></div>
+          <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 9px;"></div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noPermintaan>
+    <div class="absolute w-full h-full left-0 top-0 ion-padding flex flex-col items-center justify-center">
+      <h5>
+        Tidak Ada Permintaan
+      </h5>
+      <div class="flex items-center gap-2 border rounded-xl ion-padding" routerLink="../" routerDirection="back">
+        <ion-icon name="chevron-back"></ion-icon> Ke Halaman Sebelumnya
+      </div>
+    </div>
+  </ng-template>
+
+</ion-content>

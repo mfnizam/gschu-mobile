@@ -1,0 +1,219 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Daftar Permintaan
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="ambilPermintaan($event, false)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <!-- TODO: sembunyikan tombol filter ketika loading -->
+  <!-- <div class="flex items-center ion-padding-top ion-padding-end" style="overflow-x: auto;">
+    <div
+      class="flex-shrink-0 ion-margin-start text-primary pl-4 pr-4 pt-2 pb-2 border rounded-full border border-primary flex items-center gap-2"
+      (click)="tglFilterModal.present()">
+      <b>{{titleTglFilter}}</b>
+      <ion-icon name="calendar" style="font-size: 22px; margin-top: -2px;"></ion-icon>
+    </div>
+    <div
+      class="flex-shrink-0 ion-margin-start text-primary pl-4 pr-4 pt-2 pb-2 border rounded-full border border-primary flex items-center gap-2"
+      (click)="statusFilterModal.present()">
+      <b>{{titleStatusFilter[statusFilter]}}</b>
+      <ion-icon name="chevron-down" style="font-size: 22px;"></ion-icon>
+    </div>
+  </div>-->
+  <!-- <div> 
+    <ion-searchbar [formControl]="pencarian" mode="ios" class="ion-padding-start ion-padding-end pb-0 searchbar-custom" style="height: 48px;">
+    </ion-searchbar>
+  </div> -->
+  <div class="ion-padding">
+    <div *ngIf="!isLoading; else permintaanLoading">
+      <div *ngIf="permintaan && permintaan.length > 0; else noPermintaan">
+        <div *ngFor="let p of permintaan" class="rounded-lg ion-padding ion-margin-bottom bg-background drop-shadow-md">
+          <div [routerLink]="'/detail/permintaan/' + p._id">
+            <div class="flex items-center ion-margin-bottom -mt-1">
+              <div class="flex-1">
+                <small class="text-medium">Jenis Permintaan</small>
+                <div class=" text-bold">{{p.kategori.nama}}</div>
+              </div>
+              <div [ngClass]="'bg-' + p.kategori.kode"
+                class="flex p-2 rounded-lg rounded-lg">
+                <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px" style="width: 20px; height: 20px;">
+              </div>
+            </div>
+            <div class="flex items-start gap-3 -mt-1">
+              <div class="flex-1">
+                <small class="text-medium">Status</small>
+                <ng-container [ngSwitch]="p.status">
+                  <div *ngSwitchCase="'menungguAtasan'" class="truncate-2"><b>Menng. Persetujuan Atasan</b></div>
+                  <div *ngSwitchCase="'ditolakAtasan'" class="truncate-2 text-danger"><b>Ditolak Atasan (Revisi)</b>
+                  </div>
+                  <div *ngSwitchCase="'menungguPenyetuju'" class="truncate-2"><b>Menunggu Persetujuan
+                      {{p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM'}}</b></div>
+                  <div *ngSwitchCase="'ditolakPenyetuju'" class="truncate-2 text-danger"><b>Ditolak
+                      {{p.disetujui?.oleh?.fungsi?.nama || 'SCM & AM'}} (Revisi)</b></div>
+                  <div *ngSwitchCase="'proses'" class="truncate-2 text-warning"><b>Sedang Diproses</b></div>
+                  <div *ngSwitchCase="'selesai'" class="truncate-2 text-success"><b>Selesai</b></div>
+                  <div *ngSwitchDefault><b>-</b></div>
+                </ng-container>
+              </div>
+              <div class="text-right">
+                <small class="text-medium">Tgl Permintaan</small>
+                <div class="ion-no-margin text-bold">{{p.createAt | date:'dd MMMM YYYY'}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="p.selesai">
+            <div *ngIf="p.peringkat; else noPeringkat">
+              <hr class="bg-light">
+              <div class="flex justify-between">
+                <small class="text-medium">Ulasan Anda</small>
+                <div class="flex" style="gap: 3px;">
+                  <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                    [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                  </ion-icon>
+                </div>
+              </div>
+            </div>
+            <ng-template #noPeringkat>
+              <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
+                class="p-2 rounded-lg text-center mt-2">
+                <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
+                  <small>Beri Ulasan</small>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noPermintaan>
+      <div class="ion-padding border rounded-xl text-center text-medium">Tidak Ada Data Permintaan <br> Silahkan buat
+        permintaan.</div>
+    </ng-template>
+  </div>
+  <ng-template #permintaanLoading>
+    <!-- <div class="skeleton"> -->
+    <div id="loading-permintaan">
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+        <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+          <div>
+            <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+        <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+          <div>
+            <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+        <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+          <div>
+            <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-content>
+
+
+<ion-modal #tglFilterModal class="items-end" style="--height: 544px;">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start" class="-mr-4">
+          <ion-button (click)="tglFilterModal.dismiss()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title><b>Pilih Tanggal</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="h-full flex flex-col">
+        <ion-calendar [(ngModel)]="tglFilter" type="string" [options]="{ 
+            pickMode: 'range', 
+            from: filterMin, 
+            to: filterMax
+          }" format="DD MMM YYYY" style="flex: 1; padding: 0; margin-top: 10px;"
+          (selectStart)="tglFilterChange($event)">
+        </ion-calendar>
+        <div
+          class="border rounded-xl text-center ion-padding-start ion-padding-end ion-margin-bottom ion-margin-start ion-margin-end pt-2 pb-2 text-bold">
+          <div *ngIf="tglFilter; else noTglFilter">
+            {{tglFilter.from}} {{tglFilter.to? ' - ' + tglFilter.to : ''}}
+          </div>
+          <ng-template #noTglFilter>
+            <div class="text-medium">Silahkan Pilih Tanggal</div>
+          </ng-template>
+        </div>
+        <div class="grid grid-cols-2 gap-3 ion-padding-start ion-padding-end ion-padding-bottom text-center">
+          <div class="ion-padding bg-primary-tint text-primary rounded-xl" (click)="hapusTglFilter(tglFilterModal)">
+            <b>{{this.tglFilter && this.titleTglFilter != 'Semua Tanggal'? 'Hapus Filter' : 'Batal'}}</b>
+          </div>
+          <div class="ion-padding bg-primary text-on-primary rounded-xl" (click)="pilihTglFilter(tglFilterModal)">
+            <b>Pilih Tanggal</b>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #statusFilterModal class="modal-bottom-sheet-custom items-end">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start" class="-mr-4">
+          <ion-button (click)="statusFilterModal.dismiss()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title><b>Pilih Status</b></ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <div class="inner-content ion-padding-bottom">
+      <ion-radio-group [value]="statusFilter" (ionChange)="statusFilterChange(statusFilterModal, $event)">
+        <ion-item *ngFor="let st of titleStatusFilter; let i = index" color="light" style="font-size: 12pt;">
+          <ion-radio slot="end" [value]="i"></ion-radio>
+          <ion-label color=""><b>{{st}}</b></ion-label>
+        </ion-item>
+      </ion-radio-group>
+    </div>
+  </ng-template>
+</ion-modal>

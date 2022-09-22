@@ -1,0 +1,144 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-bold">
+      Menunggu Persetujuan Anda
+    </ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment mode="md" scrollable="true" [(ngModel)]="segment" (ionChange)="segmentChange($event)">
+      <ion-segment-button value="menunggu" style="min-width: fit-content;">
+        <ion-label><b>Menunggu Persetujuan Anda</b></ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="user?.penyetuju; else noPenyetuju" value="diproses" style="min-width: fit-content;">
+        <ion-label><b>Sedang Diproses</b></ion-label>
+      </ion-segment-button>
+      <ng-template #noPenyetuju>
+        <ion-segment-button value="disetujui" style="min-width: fit-content;">
+          <ion-label><b>Anda Setujui</b></ion-label>
+        </ion-segment-button>
+      </ng-template>
+      <ion-segment-button value="ditolak" style="min-width: fit-content;">
+        <ion-label><b>Anda Tolak</b></ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="user?.penyetuju" value="selesai" style="min-width: fit-content;">
+        <ion-label><b>Selesai</b></ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="ambilPermintaan($event, false)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div class="ion-padding">
+    <div *ngIf="!isLoading; else permintaanLoading">
+      <div *ngIf="permintaan && permintaan.length > 0; else noPermintaan">
+        <div class="text-medium" style="margin-top: -14px; margin-bottom: 4px;"><small>Total : {{totalPermintaan}} Permintaan</small></div>
+        <div *ngFor="let p of permintaan" class="rounded-lg ion-padding ion-margin-bottom bg-background drop-shadow-md">
+          <div [routerLink]="'/detail/persetujuan/' + p._id">
+            <div class="flex items-center -mt-1">
+              <div class="flex-1">
+                <small class="text-medium">Jenis Permintaan</small>
+                <div class=" text-bold">{{p.kategori.nama}}</div>
+              </div>
+              <div [ngClass]="'bg-' + p.kategori.kode" class="flex p-2 rounded-lg rounded-lg">
+                <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px" style="width: 20px; height: 20px;">
+              </div>
+            </div>
+            <hr class="bg-light mb-2 mt-2">
+            <div class="flex items-center gap-2">
+              <div [ngClass]="'text-' + p.kategori.kode"
+                class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
+                style="height: 38px; width: 38px;">
+                <b *ngIf="!p.user.foto" style="font-size: 14pt;">{{p.user.inisial}}</b>
+                <img *ngIf="p.user.foto" [src]="p.user.foto" class="h-full w-full object-cover">
+              </div>
+              <div class="flex-1 flex flex-col">
+                <div class="ion-no-margin text-bold ion-text-capitalize">{{p.user.namaLengkap}}</div>
+                <small>{{p.user.jabatan?.nama}}</small>
+              </div>
+              <div class="text-right">
+                <small class="text-medium">Tgl Permintaan</small>
+                <div class="ion-no-margin text-bold">{{p.createAt | date:'dd MMMM YYYY'}}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="p.selesai && p.peringkat">
+            <hr class="bg-light">
+            <div class="flex justify-between">
+              <small class="text-medium">Ulasan Permintaan</small>
+              <div class="flex" style="gap: 3px;">
+                <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                  [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                </ion-icon>
+              </div>
+            </div>
+          </div>
+          <!-- <div *ngIf="p.status == 'proses'" [ngClass]="' bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode" class="rounded-xl ion-padding text-center ion-margin-top" (click)="selesai(p._id)">
+            <b>Konfirmasi Selesai</b>
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noPermintaan>
+      <div class="ion-padding border rounded-xl text-center text-medium ion-text-capitalize">Tidak Ada Permintaan
+        {{segment != 'menunggu'? segment : 'Menunggu Persetujuan Anda'}}.</div>
+    </ng-template>
+  </div>
+  <ng-template #permintaanLoading>
+    <div id="loading-persetujuan">
+      <div style="height: 12px; width: 100%"></div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+        <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+          <div>
+            <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+        <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+          <div>
+            <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-background ion-margin-bottom ion-padding rounded-xl drop-shadow-md" style="height: 136px;">
+        <div class="bg-light rounded-md" style="width: 30%; height: 12px; margin-top: 7px;"></div>
+        <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px;"></div>
+        <div class="grid grid-cols-2 gap-3" style="margin-top: 28px;">
+          <div>
+            <div class="bg-light rounded-md" style="width: 20%; height: 12px;"></div>
+            <div class="bg-light rounded-md animate" style="width: 100%; height: 14px; margin-top: 6px;"></div>
+          </div>
+          <div class="flex flex-col items-end">
+            <div class="bg-light rounded-md" style="width: 50%; height: 12px; float: right;"></div>
+            <div class="bg-light rounded-md animate" style="width: 80%; height: 14px; margin-top: 6px; float: right;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-content>
