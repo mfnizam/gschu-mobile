@@ -12,7 +12,7 @@
     <ion-searchbar mode="ios" class="ion-no-padding ion-margin-bottom searchbar-custom" style="height: 36px;">
     </ion-searchbar>
   </div>
-  <div *ngIf="jenis.kode != 'zona' && jenis.kode != 'wilayah'" slot="fixed"
+  <div *ngIf="jenis.kode != 'zona'" slot="fixed"
     class="ion-text-capitalize bg-primary ion-padding rounded-full flex items-center gap-2"
     style="bottom: 16px; right: 16px;" (click)="bukaTambah(tambahModal)">
     <ion-icon name="add" style="font-size: 14pt;"></ion-icon> <span>Tambah {{jenis.nama}}</span>

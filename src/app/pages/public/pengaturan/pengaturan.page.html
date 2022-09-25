@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border drop-shadow-md">
   <ion-toolbar>
     <ion-buttons slot="start" class="-mr-4">
-      <ion-back-button></ion-back-button>
+      <ion-back-button text=""></ion-back-button>
     </ion-buttons>
     <ion-title class="text-bold">
       Pengaturan
@@ -36,14 +36,14 @@
     <span>Master Data</span>
   </h4>
   <div class="grid grid-cols-2 gap-4">
-    <!-- <div class="bg-background border rounded-lg ion-padding" routerLink="/master/zona">
+    <div class="bg-background border rounded-lg ion-padding" routerLink="/master/zona">
       <div><b>Data Zona</b></div>
-      <small class="text-medium">Jumlah: 1 Zona</small>
+      <small class="text-medium">Jumlah: {{total?.zona || 0}} Zona</small>
     </div>
     <div class="bg-background border rounded-lg ion-padding" routerLink="/master/wilayah">
       <div class="truncate"><b>Data Wilayah Kerja</b></div>
-      <small class="text-medium">Jumlah: 1 Wilayah Kerja</small>
-    </div> -->
+      <small class="text-medium">Jumlah: {{total?.wilayah || 0}} Wilayah Kerja</small>
+    </div>
     <div class="bg-background border rounded-lg ion-padding flex items-center" routerLink="/master/fungsi">
       <div class="flex-1">
         <div><b>Data Fungsi</b></div>

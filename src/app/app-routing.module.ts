@@ -74,6 +74,22 @@ const routes: Routes = [
   }, {
     path: '**',
     redirectTo: ''
+  },
+  {
+    path: 'zona',
+    loadChildren: () => import('./pages/public/master/zona/zona.module').then( m => m.ZonaPageModule)
+  },
+  {
+    path: 'wilayah',
+    loadChildren: () => import('./pages/public/master/wilayah/wilayah.module').then( m => m.WilayahPageModule)
+  },
+  {
+    path: 'fungsi',
+    loadChildren: () => import('./pages/public/master/fungsi/fungsi.module').then( m => m.FungsiPageModule)
+  },
+  {
+    path: 'jabatan',
+    loadChildren: () => import('./pages/public/master/jabatan/jabatan.module').then( m => m.JabatanPageModule)
   }
 ];
 
