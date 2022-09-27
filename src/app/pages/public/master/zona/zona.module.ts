@@ -1,20 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
 import { ZonaPageRoutingModule } from './zona-routing.module';
 
 import { ZonaPage } from './zona.page';
+import { MasterLoadingComponent } from 'app/shared/loading/master/master.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
     ZonaPageRoutingModule
   ],
-  declarations: [ZonaPage]
+  declarations: [ZonaPage, MasterLoadingComponent]
 })
 export class ZonaPageModule {}

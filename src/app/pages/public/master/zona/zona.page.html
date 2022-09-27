@@ -1,9 +1,111 @@
-<ion-header>
+<ion-header class="ion-no-border drop-shadow-md">
   <ion-toolbar>
-    <ion-title>zona</ion-title>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title><b>Data Zona</b></ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
+  <div class="flex items-center gap-3">
+    <ion-searchbar mode="ios" class="ion-no-padding ion-margin-bottom searchbar-custom" style="height: 36px;">
+    </ion-searchbar>
+  </div>
 
+  <div slot="fixed" class="ion-text-capitalize bg-primary ion-padding rounded-full flex items-center gap-2"
+    style="bottom: 16px; right: 16px;" (click)="modalCreateUpdateZona.present()">
+    <ion-icon name="add" style="font-size: 14pt;"></ion-icon> <span>Tambah Zona</span>
+  </div>
+
+  <div *ngIf="!loadingDataZona; else zonaLoading" style="margin-bottom: 72px;">
+    <div *ngIf="dataZona && dataZona.length > 0; else noZona">
+      <ng-container *ngFor="let ma of dataZona;">
+        <div class="bg-background rounded-xl drop-shadow-md ion-padding ion-margin-bottom">
+          <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}</div>
+          <div class="absolute right-0 top-0 ion-padding" (click)="itemAction(modalItemAction, ma._id)">
+            <ion-icon name="ellipsis-vertical" style="font-size: 20px; align-self: flex-start; margin-right: -8px;">
+            </ion-icon>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+
+  <ng-template #zonaLoading>
+    <master-loading></master-loading>
+  </ng-template>
+  <ng-template #noZona>
+    <div class="ion-padding border rounded-xl text-center text-medium">
+      Data Zona Kosong
+    </div>
+  </ng-template>
+
+  <ion-modal #modalCreateUpdateZona class="modal-bottom-sheet-custom items-end"
+    style="--max-height: 90%; --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);"
+    (didDismiss)="modalCreateUpdateZonaDidDismiss()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start" class="-mr-4">
+            <ion-button (click)="modalCreateUpdateZona.dismiss()">
+              <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title><b>{{formCreateUpdateZona.get('_id').value? 'Ubah' : 'Tambah'}} Zona</b></ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <div class="inner-content h-full flex flex-col ion-padding">
+        <form [formGroup]="formCreateUpdateZona" (submit)="createUpdateZona(modalCreateUpdateZona)">
+          <div class="flex-1 ion-margin-bottom">
+            <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+              style="--highlight-background: var(--border-color); --full-highlight-height: 1px;">
+              <ion-label position="floating" color="medium" class="ion-text-capitalize">Nama Zona</ion-label>
+              <ion-input formControlName="nama" class="-mb-2"></ion-input>
+            </ion-item>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-primary-tint text-primary ion-padding rounded-xl text-center"
+              (click)="modalCreateUpdateZona.dismiss()">
+              <b>Batal</b>
+            </div>
+            <button type="submit"
+              class="bg-primary text-on-primary ion-padding rounded-xl flex items-center justify-center relative"
+              style="font-size: initial;">
+              <b [class.opacity-0]="loadingCreateUpdateZona">Simpan</b>
+              <ion-spinner [class.opacity-0]="!loadingCreateUpdateZona" class="absolute" color="light"></ion-spinner>
+            </button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalItemAction class="items-end" style="--height: 168px;" (willDismiss)="modalActionDidDismiss()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start" class="-mr-4">
+            <ion-button (click)="modalItemAction.dismiss()">
+              <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title><b>Aksi Zona</b></ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item (click)="actionUpdateItem(modalItemAction, modalCreateUpdateZona, idItemAction)">
+            <ion-label>Ubah Zona</ion-label>
+            <ion-icon name="chevron-forward"></ion-icon>
+          </ion-item>
+          <ion-item lines="none" (click)="actionDeleteItem(modalItemAction, idItemAction)">
+            <ion-label color="danger">Hapus Zona</ion-label>
+            <ion-icon color="danger" name="trash-outline"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

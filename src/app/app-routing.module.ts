@@ -43,10 +43,22 @@ const routes: Routes = [
     path: 'pengaturan',
     loadChildren: () => import('./pages/public/pengaturan/pengaturan.module').then( m => m.PengaturanPageModule),
     canActivate: [AuthGuard],
-  },{
+  },/* {
     path: 'master/:jenis',
     loadChildren: () => import('./pages/public/master/master.module').then( m => m.MasterPageModule),
     canActivate: [AuthGuard],
+  }, */{
+    path: 'master/zona',
+    loadChildren: () => import('./pages/public/master/zona/zona.module').then( m => m.ZonaPageModule)
+  },{
+    path: 'master/wilayah',
+    loadChildren: () => import('./pages/public/master/wilayah/wilayah.module').then( m => m.WilayahPageModule)
+  },{
+    path: 'master/fungsi',
+    loadChildren: () => import('./pages/public/master/fungsi/fungsi.module').then( m => m.FungsiPageModule)
+  },{
+    path: 'master/jabatan',
+    loadChildren: () => import('./pages/public/master/jabatan/jabatan.module').then( m => m.JabatanPageModule)
   },{
     path: 'masuk',
     loadChildren: () => import('./pages/auth/masuk/masuk.module').then( m => m.MasukPageModule),
@@ -74,22 +86,6 @@ const routes: Routes = [
   }, {
     path: '**',
     redirectTo: ''
-  },
-  {
-    path: 'zona',
-    loadChildren: () => import('./pages/public/master/zona/zona.module').then( m => m.ZonaPageModule)
-  },
-  {
-    path: 'wilayah',
-    loadChildren: () => import('./pages/public/master/wilayah/wilayah.module').then( m => m.WilayahPageModule)
-  },
-  {
-    path: 'fungsi',
-    loadChildren: () => import('./pages/public/master/fungsi/fungsi.module').then( m => m.FungsiPageModule)
-  },
-  {
-    path: 'jabatan',
-    loadChildren: () => import('./pages/public/master/jabatan/jabatan.module').then( m => m.JabatanPageModule)
   }
 ];
 

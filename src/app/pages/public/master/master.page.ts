@@ -73,7 +73,7 @@ export class MasterPage implements OnDestroy {
     this._master.data(jenis, filter)
       .subscribe(res => {
         console.log(res);
-        this[set] = res.master.map(v => ({
+        this[set] = res[jenis].map(v => ({
           ...v,
           // ...v.namaLengkap ? { inisial: v.namaLengkap?.match(/(^\S\S?|\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase() } : {},
           ...v.nama ? { nama: v.nama.replace(/\\n/g, '') } : {},
