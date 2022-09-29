@@ -24,6 +24,8 @@ export class CetakPage {
     fungsi: [null, Validators.required],
     namaFungsi: [null],
     tanggalStart: [null],
+    kategori: [null],
+    namaKategori: [null],
     tanggalEnd: [null],
     tanggalCombine: [null]
   })

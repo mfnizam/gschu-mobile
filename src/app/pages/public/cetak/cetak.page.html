@@ -9,21 +9,35 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="formFilterCetakFungsi" (submit)="submitFilter()">
-    <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
-      style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
-      <ion-label position="floating" color="medium">Pilih Fungsi</ion-label>
-      <ion-icon slot="end" name="chevron-down"></ion-icon>
-      <ion-input formControlName="namaFungsi" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
-      </ion-input>
-    </ion-item>
-    <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl item-opacity-100"
-      (click)="modalSelectDate.present()">
-      <ion-icon slot="start" name="calendar" color="medium" style="margin-top: 11px;"></ion-icon>
-      <ion-label position="floating" color="medium">Tanggal Permintaan</ion-label>
-      <ion-input [value]="formFilterCetakFungsi.get('tanggalCombine').value" readonly="true"
-        class="-mb-2 ion-text-capitalize"></ion-input>
-    </ion-item>
-    <ion-button type="submit" mode="ios" class="w-full">Cari Permintaan</ion-button>
+    <div class="flex gap-3">
+      <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+        style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+        <ion-label position="floating" color="medium">Pilih Fungsi</ion-label>
+        <ion-icon slot="end" name="chevron-down"></ion-icon>
+        <ion-input formControlName="namaFungsi" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
+        </ion-input>
+      </ion-item>
+      <ion-item fill="outline" class=" item-rounded-xl ion-margin-bottom"
+        style="height: 57px; width: min-content; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+        <ion-label position="floating" color="medium">Kategori</ion-label>
+        <ion-icon slot="end" name="chevron-down"></ion-icon>
+        <ion-input formControlName="namaKategori" class="-mb-2" (ionFocus)="openModalSelectKategori(modalSelectFungsi)">
+        </ion-input>
+      </ion-item>
+    </div>
+    <div class="flex gap-2 ion-margin-bottom">
+      <ion-item fill="outline" class="flex-1 item-rounded-xl item-opacity-100"
+        (click)="modalSelectDate.present()">
+        <ion-icon slot="start" name="calendar" color="medium" style="margin-top: 11px;"></ion-icon>
+        <ion-label position="floating" color="medium">Tanggal Permintaan</ion-label>
+        <ion-input [value]="formFilterCetakFungsi.get('tanggalCombine').value" readonly="true"
+          class="-mb-2 ion-text-capitalize"></ion-input>
+      </ion-item>
+      <!-- <ion-button type="submit" mode="ios" class="w-full">Cari Permintaan</ion-button> -->
+      <ion-button type="submit" mode="ios" class="ion-no-margin" style="height: 57px;">
+        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+      </ion-button>
+    </div>
   </form>
 
   <hr class="bg-light">
@@ -118,7 +132,8 @@
             </ng-template>
           </div>
           <div class="grid grid-cols-2 gap-3 ion-padding-start ion-padding-end ion-padding-bottom text-center">
-            <div class="ion-padding bg-primary-tint text-primary rounded-xl" (click)="deleteSelectedDate(modalSelectDate)">
+            <div class="ion-padding bg-primary-tint text-primary rounded-xl"
+              (click)="deleteSelectedDate(modalSelectDate)">
               <b>Hapus Filter</b>
             </div>
             <div class="ion-padding bg-primary text-on-primary rounded-xl" (click)="selectDate(modalSelectDate)">
