@@ -60,6 +60,9 @@ const routes: Routes = [
     path: 'master/jabatan',
     loadChildren: () => import('./pages/public/master/jabatan/jabatan.module').then( m => m.JabatanPageModule)
   },{
+    path: 'cetak/:jenis',
+    loadChildren: () => import('./pages/public/cetak/cetak.module').then( m => m.CetakPageModule)
+  },{
     path: 'masuk',
     loadChildren: () => import('./pages/auth/masuk/masuk.module').then( m => m.MasukPageModule),
     canActivate: [NonAuthGuard],
