@@ -22,7 +22,8 @@
     <div *ngIf="dataFungsi && dataFungsi.length > 0; else noFungsi">
       <ng-container *ngFor="let ma of dataFungsi;">
         <div class="bg-background rounded-xl drop-shadow-md ion-padding ion-margin-bottom">
-          <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}</div>
+          <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}
+          </div>
           <div class="mt-1">
             <small>{{ma.organisasi?.nama + (ma.organisasi.tipe == 'wilayah'? ' - ' + ma.organisasi.zona?.nama :
               '')}}</small>
@@ -49,7 +50,7 @@
                 </div>
               </div>
             </div>
-  
+
             <div *ngIf="ma.penyetuju as pe" class="">
               <small class="text-medium mb-1">Penyetuju</small>
               <div class="flex items-center gap-3">
@@ -130,7 +131,8 @@
                   <small class="text-medium">Jika tidak diaktifkan maka pemilihan atasan dapat ditentukan melaui data
                     jabatan</small>
                 </ion-label>
-                <ion-toggle formControlName="ttdAtasan" mode="ios" style="transform: scale(0.8); margin-right: -4px;" (ionChange)="ttdAtasanChange($event)">
+                <ion-toggle formControlName="ttdAtasan" mode="ios" style="transform: scale(0.8); margin-right: -4px;"
+                  (ionChange)="ttdAtasanChange($event)">
                 </ion-toggle>
               </ion-item>
               <ng-container *ngIf="formCreateUpdateFungsi.get('ttdAtasan').value">
@@ -241,7 +243,7 @@
         <ng-template #selectOrganisasiLoading>
           <div class="flex items-center justify-center gap-3">
             <ion-spinner color="primary"></ion-spinner>
-            <div >Memuat data zona/wilayah kerja...</div>
+            <div>Memuat data zona/wilayah kerja...</div>
           </div>
         </ng-template>
         <ng-template #noDataSelectOrganisasi>

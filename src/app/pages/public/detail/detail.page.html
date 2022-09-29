@@ -597,8 +597,9 @@
 
       <!-- Penyetuju =============================================================== -->
       <ng-container *ngIf="p.diketahui as dk">
-        <div *ngIf="!dk.disabled && dk.status">
-          <h5 class="text-medium pt-2"><b>Penyetuju Atasan</b></h5>
+        <hr class="bg-light">
+        <div *ngIf="!dk.disabled">
+          <h5 class="text-medium"><b>Penyetuju Atasan</b></h5>
           <div class="ion-padding bg-background drop-shadow-md rounded-lg ion-margin-bottom">
             <div class="flex items-center gap-3">
               <div [ngClass]="'text-' + p.kategori.kode"
@@ -609,9 +610,9 @@
               </div>
               <div class="flex-1 flex flex-col">
                 <div class="ion-no-margin text-bold ion-text-capitalize">{{dk.oleh?.namaLengkap}}</div>
-                <small>{{dk.oleh?.jabatan?.nama}}</small>
+                <small>{{(dk.oleh?.jabatan?.nama || '-') + ', ' + dk.oleh.fungsi?.nama}}</small>
               </div>
-              <div *ngIf="dk.status as status" class="flex-shrink-0 flex flex-col text-right">
+              <div class="flex-shrink-0 flex flex-col text-right">
                 <div [class]="status == 1? 'text-success' : status == 2? 'text-danger' : 'text-medium'"
                   class="text-bold">
                   <span *ngIf="user?._id == p.diketahui.oleh?._id; else nonSetujui">{{status == 1? 'Anda Setujui' :
@@ -620,7 +621,7 @@
                     <span>{{status == 1? 'Disetujui' : status == 2? 'Ditolak' : 'Menunggu'}}</span>
                   </ng-template>
                 </div>
-                <small>{{dk.tgl | date:'dd MMMM yyyy'}}</small>
+                <small *ngIf="status">{{dk.tgl | date:'dd MMMM yyyy'}}</small>
               </div>
             </div>
             <div *ngIf="dk.status == 2">
@@ -713,7 +714,7 @@
 
       <div *ngIf="jenisPermintaan == 'permintaan'" [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
         class="ion-padding text-rdp rounded-xl text-center">
-        <b>Cetak Permintaan</b>
+        <b>Simpan Permintaan Sebagai PDF</b>
       </div>
 
     </div>

@@ -93,7 +93,7 @@ export class JabatanPage {
   }
 
   modalCreateUpdateJabatanDidDismiss() {
-    this.formCreateUpdateJabatan.reset();
+    this.formCreateUpdateJabatan.reset({ atasanFungsi: true });
   }
 
   itemAction(modal, idItem) {
