@@ -78,10 +78,17 @@
       </div> -->
   </div>
 
-  <!-- <h4 class="text-bold flex justify-between items-center">
-    <span>Fitur Cetak</span>
+  <h4 class="text-bold flex justify-between items-center">
+    <span>Fitur Lain</span>
   </h4>
-  <div class="ion-padding text-center border rounded-lg">
-    Belum ada fitur cetak
-  </div> -->
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-background border rounded-lg ion-padding flex items-center gap-2" routerLink="/pengguna">
+      <div class="truncate-2 flex-1"><b>Pengguna <br> Terdaftar</b></div>
+      <ion-icon name="people-outline" style="font-size: 24pt;"></ion-icon>
+    </div>
+    <div class="bg-background border rounded-lg ion-padding flex items-center gap-2" routerLink="/cetak">
+      <div class="truncate-2 flex-1"><b>Cetak <br> Permintaan</b></div>
+      <ion-icon name="print-outline" style="font-size: 24pt;"></ion-icon>
+    </div>
+  </div>
 </ion-content>

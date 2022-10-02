@@ -28,7 +28,8 @@
               ' +
               ma.fungsi.organisasi.zona?.nama : '')}}</small>
           </div>
-          <ng-container *ngIf="!ma.fungsi.atasan?._id">
+          <!-- <ng-container *ngIf="!ma.fungsi.atasan?._id"> -->
+          <ng-container>
             <div *ngIf="ma.atasan as at">
               <hr class="bg-light">
               <small class="text-medium mb-1">Atasan</small>

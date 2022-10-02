@@ -22,7 +22,8 @@
     <div *ngIf="dataFungsi && dataFungsi.length > 0; else noFungsi">
       <ng-container *ngFor="let ma of dataFungsi;">
         <div class="bg-background rounded-xl drop-shadow-md ion-padding ion-margin-bottom">
-          <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}</div>
+          <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}
+          </div>
           <div class="mt-1">
             <small>{{ma.organisasi?.nama + (ma.organisasi.tipe == 'wilayah'? ' - ' + ma.organisasi.zona?.nama :
               '')}}</small>

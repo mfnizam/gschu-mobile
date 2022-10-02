@@ -1666,6 +1666,14 @@
   padding-inline-end: var(--ion-padding, 16px) !important;
 }
 
+ion-accordion{
+  overflow: visible !important;
+  
+  &::part(content){
+    overflow: visible !important;
+  }
+}
+
 // .month-picker.primary .month-packer-item.this-month button {
 //   background-color: var(--ion-color-primary) !important;
 // }
