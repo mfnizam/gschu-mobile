@@ -1,9 +1,9 @@
+import { User } from "app/services/user/user.service";
 import { Fungsi } from "../fungsi/fungsi.types";
-import { Wilayah } from "../wilayah/wilayah.types";
 
 export interface Jabatan {
   _id?: any;
-  wilayah: Wilayah;
-  fungsi: Fungsi;
   nama: string;
+  fungsi: Fungsi;
+  atasan: User;
 }

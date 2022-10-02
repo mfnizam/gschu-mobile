@@ -109,7 +109,9 @@ export class JabatanPage {
       ...jabatan,
       fungsi: jabatan.fungsi?._id,
       namaFungsi: jabatan.fungsi?.nama + ' - ' + jabatan.fungsi.organisasi.nama + (jabatan.fungsi.organisasi.tipe == 'wilayah'? ' - ' + jabatan.fungsi.organisasi.zona.nama : ''),
-      atasanFungsi: jabatan.fungsi.atasan?._id
+      atasanFungsi: !!jabatan.fungsi.atasan?._id,
+      atasan: jabatan.atasan._id,
+      dataAtasan: jabatan.atasan,
     })
   }
 
