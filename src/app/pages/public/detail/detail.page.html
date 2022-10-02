@@ -597,30 +597,30 @@
 
       <!-- Penyetuju =============================================================== -->
       <ng-container *ngIf="p.diketahui as dk">
-        <div *ngIf="!dk.disabled && dk.status">
+        <div *ngIf="!dk.disabled">
           <h5 class="text-medium pt-2"><b>Penyetuju Atasan</b></h5>
           <div class="ion-padding bg-background drop-shadow-md rounded-lg ion-margin-bottom">
             <div class="flex items-center gap-3">
               <div [ngClass]="'text-' + p.kategori.kode"
                 class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
                 style="height: 38px; width: 38px;">
-                <b *ngIf="!dk.oleh?.foto" style="font-size: 15pt;">{{dk.oleh?.inisial}}</b>
+                <b *ngIf="!dk.oleh?.foto" style="font-size: 13pt;">{{dk.oleh?.inisial}}</b>
                 <img *ngIf="dk.oleh?.foto" [src]="dk.oleh?.foto" class="h-full w-full object-cover">
               </div>
               <div class="flex-1 flex flex-col">
                 <div class="ion-no-margin text-bold ion-text-capitalize">{{dk.oleh?.namaLengkap}}</div>
-                <small>{{dk.oleh?.jabatan?.nama}}</small>
+                <small>{{dk.oleh?.jabatan?.nama + ', ' + dk.oleh?.fungsi?.nama}}</small>
               </div>
-              <div *ngIf="dk.status as status" class="flex-shrink-0 flex flex-col text-right">
-                <div [class]="status == 1? 'text-success' : status == 2? 'text-danger' : 'text-medium'"
+              <div class="flex-shrink-0 flex flex-col text-right">
+                <div [class]="dk.status == 1? 'text-success' : dk.status == 2? 'text-danger' : 'text-medium'"
                   class="text-bold">
-                  <span *ngIf="user?._id == p.diketahui.oleh?._id; else nonSetujui">{{status == 1? 'Anda Setujui' :
-                    status == 2? 'Anda Tolak' : 'Menunggu'}}</span>
+                  <span *ngIf="user?._id == p.diketahui.oleh?._id; else nonSetujui" style="white-space: pre-wrap;">{{dk.status == 1? 'Anda Setujui' :
+                    dk.status == 2? 'Anda Tolak' : 'Mengg. \n Anda Setujui'}}</span>
                   <ng-template #nonSetujui>
-                    <span>{{status == 1? 'Disetujui' : status == 2? 'Ditolak' : 'Menunggu'}}</span>
+                    <span>{{dk.status == 1? 'Disetujui' : dk.status == 2? 'Ditolak' : 'Menunggu'}}</span>
                   </ng-template>
                 </div>
-                <small>{{dk.tgl | date:'dd MMMM yyyy'}}</small>
+                <small *ngIf="dk.status">{{dk.tgl | date:'dd MMMM yyyy'}}</small>
               </div>
             </div>
             <div *ngIf="dk.status == 2">
@@ -635,31 +635,31 @@
       </ng-container>
 
       <ng-container *ngIf="p.disetujui as ds">
-        <div *ngIf="!ds.disabled && ds.status">
+        <div *ngIf="!ds.disabled">
           <h5 class="text-medium pt-2"><b>Penyetuju {{ds.oleh?.fungsi?.nama || 'SCM & AM'}}</b></h5>
           <div class="ion-padding bg-background drop-shadow-md rounded-lg ion-margin-bottom">
             <div class="flex items-center gap-3">
               <div [ngClass]="'text-' + p.kategori.kode"
                 class="flex-shrink-0 border rounded-full overflow-hidden flex items-center justify-center"
                 style="height: 38px; width: 38px;">
-                <b *ngIf="!ds.oleh?.foto" style="font-size: 15pt;">{{ds.oleh?.inisial}}</b>
+                <b *ngIf="!ds.oleh?.foto" style="font-size: 13pt;">{{ds.oleh?.inisial}}</b>
                 <img *ngIf="ds.oleh?.foto" [src]="ds.oleh?.foto" class="h-full w-full object-cover">
               </div>
               <div class="flex-1 flex flex-col">
                 <div class="ion-no-margin text-bold ion-text-capitalize">{{ds.oleh?.namaLengkap}}</div>
-                <small>{{ds.oleh?.jabatan?.nama}}</small>
+                <small>{{ds.oleh?.jabatan?.nama + ', ' + ds.oleh?.fungsi?.nama}}</small>
               </div>
-              <div *ngIf="ds.status as status" class="flex-shrink-0 flex flex-col text-right">
-                <div [class]="status == 1? 'text-success' : status == 2? 'text-danger' : 'text-medium'"
+              <div class="flex-shrink-0 flex flex-col text-right">
+                <div [class]="ds.status == 1? 'text-success' : ds.status == 2? 'text-danger' : 'text-medium'"
                   class="text-bold">
-                  <span *ngIf="user?._id == p.disetujui.oleh?._id; else nonSetujui">{{status == 1? 'Anda Setujui' :
-                    status == 2? 'Anda Tolak' : 'Menunggu'}}</span>
+                  <span *ngIf="user?._id == p.disetujui.oleh?._id; else nonSetujui" style="white-space: pre-wrap;">{{ds.status == 1? 'Anda Setujui' :
+                    ds.status == 2? 'Anda Tolak' : 'Mengg. \n Anda Setujui'}}</span>
                   <ng-template #nonSetujui>
-                    <span>{{status == 1? 'Disetujui' : status == 2? 'Ditolak' : 'Menunggu'}}</span>
+                    <span>{{ds.status == 1? 'Disetujui' : ds.status == 2? 'Ditolak' : 'Menunggu'}}</span>
                   </ng-template>
                   <!-- user?._id == p.disetujui.oleh?._id? 'Anda Tolak' :  -->
                 </div>
-                <small>{{ds.tgl | date:'dd MMMM yyyy'}}</small>
+                <small *ngIf="ds.status">{{ds.tgl | date:'dd MMMM yyyy'}}</small>
               </div>
             </div>
             <div *ngIf="ds.status == 2">
@@ -712,7 +712,7 @@
       </ng-container>
 
       <div *ngIf="jenisPermintaan == 'permintaan'" [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
-        class="ion-padding text-rdp rounded-xl text-center">
+        class="ion-padding text-rdp rounded-xl text-center" (click)="cetakPermintaan()">
         <b>Cetak Permintaan</b>
       </div>
 

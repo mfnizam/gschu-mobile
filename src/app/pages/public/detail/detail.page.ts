@@ -230,4 +230,13 @@ export class DetailPage implements OnDestroy {
         this.showMsg(err, 'Gagal menyelesaikan permintaan. Coba beberapa saat lagi.')
       })
   }
+
+  async cetakPermintaan(){
+    let alert = await this._alert.create({
+      header: 'Fitur ini belum tersedia.',
+      mode: 'ios',
+      buttons: [{ text: 'Tutup', role: 'cancel'}]
+    })
+    alert.present();
+  }
 }
