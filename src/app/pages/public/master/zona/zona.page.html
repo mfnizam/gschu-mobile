@@ -13,10 +13,10 @@
     </ion-searchbar>
   </div>
 
-  <div slot="fixed" class="ion-text-capitalize bg-primary ion-padding rounded-full flex items-center gap-2"
+  <!-- <div slot="fixed" class="ion-text-capitalize bg-primary ion-padding rounded-full flex items-center gap-2"
     style="bottom: 16px; right: 16px;" (click)="modalCreateUpdateZona.present()">
     <ion-icon name="add" style="font-size: 14pt;"></ion-icon> <span>Tambah Zona</span>
-  </div>
+  </div> -->
 
   <div *ngIf="!loadingDataZona; else zonaLoading" style="margin-bottom: 72px;">
     <div *ngIf="dataZona && dataZona.length > 0; else noZona">
