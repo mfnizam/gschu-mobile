@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { JabatanPageRoutingModule } from './jabatan-routing.module';
 
 import { JabatanPage } from './jabatan.page';
-import { MasterLoadingComponent } from 'app/shared/loading/master/master.component';
+import { MasterLoadingModule } from 'app/shared/loading/master/master.module';
 
 @NgModule({
   imports: [
@@ -15,8 +15,9 @@ import { MasterLoadingComponent } from 'app/shared/loading/master/master.compone
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    JabatanPageRoutingModule
+    JabatanPageRoutingModule,
+    MasterLoadingModule
   ],
-  declarations: [JabatanPage, MasterLoadingComponent]
+  declarations: [JabatanPage]
 })
 export class JabatanPageModule {}

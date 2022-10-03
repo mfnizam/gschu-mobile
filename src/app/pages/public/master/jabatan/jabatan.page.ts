@@ -105,14 +105,23 @@ export class JabatanPage {
     if (modalItemAction) await modalItemAction.dismiss();
     modalCreateUpdateFungsi.present();
     let jabatan: Jabatan = this.dataJabatan.find(v => v._id == id)
-    this.formCreateUpdateJabatan.patchValue({
-      ...jabatan,
-      fungsi: jabatan.fungsi?._id,
-      namaFungsi: jabatan.fungsi?.nama + ' - ' + jabatan.fungsi.organisasi.nama + (jabatan.fungsi.organisasi.tipe == 'wilayah'? ' - ' + jabatan.fungsi.organisasi.zona.nama : ''),
-      atasanFungsi: !!jabatan.fungsi.atasan?._id,
-      atasan: jabatan.atasan._id,
-      dataAtasan: jabatan.atasan,
-    })
+    if(jabatan) {
+      this.formCreateUpdateJabatan.patchValue({
+        ...jabatan,
+        fungsi: jabatan.fungsi?._id,
+        namaFungsi: jabatan.fungsi?.nama + ' - ' + jabatan.fungsi?.organisasi?.nama + (jabatan.fungsi?.organisasi?.tipe == 'wilayah'? ' - ' + jabatan.fungsi?.organisasi?.zona?.nama : ''),
+        atasanFungsi: !!jabatan.fungsi?.atasan?._id,
+        atasan: jabatan.atasan?._id,
+        dataAtasan: jabatan.atasan,
+      })
+    }else {
+      let alert = await this.alert.create({
+        header: 'Terjadi kesalahan. Coba beberapa saat lagi',
+        mode: 'ios',
+        buttons: [{ text: 'Tutup', role: 'cancel'}]
+      })
+      alert.present();
+    }
   }
 
   async actionDeleteItem(modal, id) {

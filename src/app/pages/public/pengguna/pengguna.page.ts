@@ -7,6 +7,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class PenggunaPage {
 
+  dataPenggunaLoading = false;
+
   formFilterPengguna: FormGroup = this.formBuilder.group({
     fungsi: [null],
     namaFungsi: [null]
@@ -16,5 +18,8 @@ export class PenggunaPage {
     private formBuilder: FormBuilder
   ) { }
 
+  submitFilter(){
+
+  }
 
 }

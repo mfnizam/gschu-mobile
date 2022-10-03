@@ -14,7 +14,7 @@
         style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
         <ion-label position="floating" color="medium">Pilih Fungsi</ion-label>
         <ion-icon slot="end" name="chevron-down"></ion-icon>
-        <ion-input formControlName="namaFungsi" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
+        <ion-input formControlName="namaFungsi" class="-mb-2">
         </ion-input>
       </ion-item>
       <ion-button type="submit" mode="ios" class="ion-no-margin" style="height: 57px;">
@@ -25,9 +25,5 @@
   <hr class="bg-light">
   <div>
     <small class="text-medium">120 Pengguna</small>
-    <div *ngIf="!isLoading; else permintaanLoading">
-      <div *ngIf="permintaan && permintaan.length > 0; else noPermintaan">
-      </div>
-    </div>
   </div>
 </ion-content>

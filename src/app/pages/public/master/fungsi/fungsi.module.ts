@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { FungsiPageRoutingModule } from './fungsi-routing.module';
 
 import { FungsiPage } from './fungsi.page';
-import { MasterLoadingComponent } from 'app/shared/loading/master/master.component';
+import { MasterLoadingModule } from 'app/shared/loading/master/master.module';
 
 @NgModule({
   imports: [
@@ -15,8 +15,9 @@ import { MasterLoadingComponent } from 'app/shared/loading/master/master.compone
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    FungsiPageRoutingModule
+    FungsiPageRoutingModule,
+    MasterLoadingModule
   ],
-  declarations: [FungsiPage, MasterLoadingComponent]
+  declarations: [FungsiPage]
 })
 export class FungsiPageModule {}

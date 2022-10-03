@@ -21,7 +21,7 @@
         style="height: 57px; width: min-content; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
         <ion-label position="floating" color="medium">Kategori</ion-label>
         <ion-icon slot="end" name="chevron-down"></ion-icon>
-        <ion-input formControlName="namaKategori" class="-mb-2" (ionFocus)="openModalSelectKategori(modalSelectFungsi)">
+        <ion-input formControlName="namaKategori" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
         </ion-input>
       </ion-item>
     </div>
@@ -44,10 +44,21 @@
 
   <div>
     <small class="text-medium">120 Perminataan</small>
-    <div *ngIf="!isLoading; else permintaanLoading">
-      <div *ngIf="permintaan && permintaan.length > 0; else noPermintaan">
+    <div *ngIf="!loadingDataPermintaan; else permintaanLoading">
+      <div *ngIf="dataPerminataan && dataPerminataan.length > 0; else noPermintaan">
       </div>
     </div>
+    <ng-template #permintaanLoading>
+      <div class="flex items-center justify-center gap-3">
+        <ion-spinner color="primary"></ion-spinner>
+        <div>Memuat data...</div>
+      </div>
+    </ng-template>
+    <ng-template #noPermintaan>
+      <div class="ion-padding border rounded-xl text-center text-medium">
+        Data Perminataan Kosong
+      </div>
+    </ng-template>
   </div>
 
 
@@ -66,7 +77,7 @@
       <ion-content>
         <div class="ion-padding-top ion-padding-bottom">
           <div *ngIf="!loadingDataSelectFungsi; else selectFungsiLoading">
-            <ion-radio-group *ngIf="dataSelectFungsi?.length > 0; else noDataSelectZona" [(ngModel)]="selectedFungsi">
+            <ion-radio-group *ngIf="dataSelectFungsi?.length > 0; else noDataSelectFungsi" [(ngModel)]="selectedFungsi">
               <ion-item *ngFor="let sf of dataSelectFungsi">
                 <ion-label>
                   <div style="white-space: break-spaces;">{{sf.nama}}</div>
@@ -81,11 +92,11 @@
         <ng-template #selectFungsiLoading>
           <div class="flex items-center justify-center gap-3">
             <ion-spinner color="primary"></ion-spinner>
-            <div>Memuat data zona...</div>
+            <div>Memuat data fungsi...</div>
           </div>
         </ng-template>
-        <ng-template #noPilihan>
-          <div class="ion-text-capitalize text-center text-medium">Data Zona Kosong</div>
+        <ng-template #noDataSelectFungsi>
+          <div class="ion-text-capitalize text-center text-medium">Data Fungsi Kosong</div>
         </ng-template>
       </ion-content>
       <ion-footer>

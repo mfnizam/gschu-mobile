@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { WilayahPageRoutingModule } from './wilayah-routing.module';
 
 import { WilayahPage } from './wilayah.page';
-import { MasterLoadingComponent } from 'app/shared/loading/master/master.component';
+import { MasterLoadingModule } from 'app/shared/loading/master/master.module';
 
 @NgModule({
   imports: [
@@ -15,8 +15,9 @@ import { MasterLoadingComponent } from 'app/shared/loading/master/master.compone
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    WilayahPageRoutingModule
+    WilayahPageRoutingModule,
+    MasterLoadingModule
   ],
-  declarations: [WilayahPage, MasterLoadingComponent]
+  declarations: [WilayahPage]
 })
 export class WilayahPageModule {}

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Fungsi, Jabatan, Wilayah } from 'app/pages/public/master/master.types';
+import { Fungsi } from 'app/pages/public/master/fungsi/fungsi.types';
+import { Jabatan } from 'app/pages/public/master/jabatan/jabatan.types';
+import { Wilayah } from 'app/pages/public/master/wilayah/wilayah.types';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 export class User {

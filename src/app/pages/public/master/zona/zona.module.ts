@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ZonaPageRoutingModule } from './zona-routing.module';
 
 import { ZonaPage } from './zona.page';
-import { MasterLoadingComponent } from 'app/shared/loading/master/master.component';
+import { MasterLoadingModule } from 'app/shared/loading/master/master.module';
 
 @NgModule({
   imports: [
@@ -15,8 +15,9 @@ import { MasterLoadingComponent } from 'app/shared/loading/master/master.compone
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    ZonaPageRoutingModule
+    ZonaPageRoutingModule,
+    MasterLoadingModule
   ],
-  declarations: [ZonaPage, MasterLoadingComponent]
+  declarations: [ZonaPage]
 })
 export class ZonaPageModule {}

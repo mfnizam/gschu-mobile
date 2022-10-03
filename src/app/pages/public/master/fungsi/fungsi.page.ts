@@ -5,7 +5,7 @@ import { User } from 'app/services/user/user.service';
 import { Wilayah } from '../wilayah/wilayah.types';
 import { Zona } from '../zona/zona.types';
 import { FungsiService } from './fungsi.service';
-import { Fungsi } from './fungsi.types';
+import { Fungsi, Organisasi } from './fungsi.types';
 
 @Component({
   selector: 'app-fungsi',
@@ -16,7 +16,7 @@ export class FungsiPage {
   loadingDataFungsi = true;
   dataFungsi: Fungsi[] = [];
   loadingDataSelectOrganisasi = false;
-  dataSelectOrganisasi: (Zona | Wilayah)[] = [];
+  dataSelectOrganisasi: Organisasi[] = [];
   loadingDataSelectUser = false; // Data untuk pemilihan atasan/penyetuju
   dataSelectUser: User[] = [];
 
@@ -37,7 +37,7 @@ export class FungsiPage {
 
   idItemAction: string;
 
-  selectedOrganisasi: Zona | Wilayah;
+  selectedOrganisasi: Organisasi;
   selectedUser: User;
 
   constructor(
