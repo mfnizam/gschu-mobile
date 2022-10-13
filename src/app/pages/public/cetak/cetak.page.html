@@ -8,29 +8,27 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form [formGroup]="formFilterCetakFungsi" (submit)="submitFilter()">
-    <div class="flex gap-3">
-      <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
-        style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
-        <ion-label position="floating" color="medium">Pilih Fungsi</ion-label>
-        <ion-icon slot="end" name="chevron-down"></ion-icon>
-        <ion-input formControlName="namaFungsi" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
-        </ion-input>
-      </ion-item>
-      <ion-item fill="outline" class=" item-rounded-xl ion-margin-bottom"
-        style="height: 57px; width: min-content; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
-        <ion-label position="floating" color="medium">Kategori</ion-label>
-        <ion-icon slot="end" name="chevron-down"></ion-icon>
-        <ion-input formControlName="namaKategori" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
-        </ion-input>
-      </ion-item>
-    </div>
+  <form [formGroup]="formFilterCetak" (submit)="submitFilter()">
+    <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+      style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+      <ion-label position="floating" color="medium">Pilih Fungsi</ion-label>
+      <ion-icon slot="end" name="chevron-down"></ion-icon>
+      <ion-input formControlName="namaFungsi" class="-mb-2" (ionFocus)="openModalSelectFungsi(modalSelectFungsi)">
+      </ion-input>
+    </ion-item>
+    <ion-item fill="outline" class=" item-rounded-xl ion-margin-bottom"
+      style="height: 57px; --highlight-background: var(--border-color); --full-highlight-height: 1px;">
+      <ion-label position="floating" color="medium">Kategori</ion-label>
+      <ion-icon slot="end" name="chevron-down"></ion-icon>
+      <ion-input formControlName="namaKategori" class="-mb-2" (ionFocus)="modalSelectKategori.present()">
+      </ion-input>
+    </ion-item>
     <div class="flex gap-2 ion-margin-bottom">
       <ion-item fill="outline" class="flex-1 item-rounded-xl item-opacity-100"
         (click)="modalSelectDate.present()">
         <ion-icon slot="start" name="calendar" color="medium" style="margin-top: 11px;"></ion-icon>
         <ion-label position="floating" color="medium">Tanggal Permintaan</ion-label>
-        <ion-input [value]="formFilterCetakFungsi.get('tanggalCombine').value" readonly="true"
+        <ion-input [value]="formFilterCetak.get('tanggalCombine').value" readonly="true"
           class="-mb-2 ion-text-capitalize"></ion-input>
       </ion-item>
       <!-- <ion-button type="submit" mode="ios" class="w-full">Cari Permintaan</ion-button> -->
@@ -43,9 +41,12 @@
   <hr class="bg-light">
 
   <div>
-    <small class="text-medium">120 Perminataan</small>
     <div *ngIf="!loadingDataPermintaan; else permintaanLoading">
-      <div *ngIf="dataPerminataan && dataPerminataan.length > 0; else noPermintaan">
+      <div *ngIf="dataPermintaan && dataPermintaan.length > 0; else noPermintaan">
+        <small class="text-medium">{{dataPermintaan.length}} Perminataan</small>
+        <div *ngFor="let permintaan of dataPermintaan">
+          {{permintaan._id}}
+        </div>
       </div>
     </div>
     <ng-template #permintaanLoading>
@@ -56,7 +57,7 @@
     </ng-template>
     <ng-template #noPermintaan>
       <div class="ion-padding border rounded-xl text-center text-medium">
-        Data Perminataan Kosong
+        Tidak ada data permintaan
       </div>
     </ng-template>
   </div>
@@ -105,6 +106,55 @@
             <span class="alert-button-inner sc-ion-alert-ios">Batal</span>
           </button>
           <button type="button" (click)="selectFungsi(modalSelectFungsi)">
+            <span class="alert-button-inner sc-ion-alert-ios">Pilih</span>
+          </button>
+        </div>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalSelectKategori class="modal-alert-custom"
+    style="--max-height: 50%; --max-width: 85%;  --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);"
+    (didDismiss)="selectKategoriDidDismiss()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar style="margin-bottom: -8px;">
+          <ion-title class="text-center ion-text-capitalize"><b>Pilih Kategori</b></ion-title>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="ion-padding-top ion-padding-bottom">
+          <div *ngIf="!loadingDataKategoriFungsi; else selectKategoriLoading">
+            <ion-radio-group *ngIf="dataSelectKategori?.length > 0; else nodataSelectKategori" [(ngModel)]="selectedKategori">
+              <ion-item *ngFor="let sk of dataSelectKategori">
+                <ion-label>
+                  <!-- <div style="white-space: break-spaces;">{{sk.nama}}</div> -->
+                  <div>{{sk.nama}}</div>
+                </ion-label>
+                <ion-radio mode="md" slot="end" [value]="sk" class="ml-1"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </div>
+        </div>
+        <ng-template #selectKategoriLoading>
+          <div class="flex items-center justify-center gap-3">
+            <ion-spinner color="primary"></ion-spinner>
+            <div>Memuat data kategori...</div>
+          </div>
+        </ng-template>
+        <ng-template #nodataSelectKategori>
+          <div class="ion-text-capitalize text-center text-medium">Data Kategori Kosong</div>
+        </ng-template>
+      </ion-content>
+      <ion-footer>
+        <div class="flex modal-button">
+          <button type="button" (click)="modalSelectKategori.dismiss()">
+            <span class="alert-button-inner sc-ion-alert-ios">Batal</span>
+          </button>
+          <button type="button" (click)="selectKategori(modalSelectKategori)">
             <span class="alert-button-inner sc-ion-alert-ios">Pilih</span>
           </button>
         </div>
@@ -161,10 +211,13 @@
 <ion-footer>
   <ion-toolbar>
     <div class="ion-padding">
-      <button [disabled]="formFilterCetakFungsi.invalid" [class.opacity-50]="formFilterCetakFungsi.invalid"
+      <button [disabled]="formFilterCetak.invalid" [class.opacity-50]="formFilterCetak.invalid"
         class="w-full bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative">
-        <h6 [class.opacity-0]="loadingCetak" class="ion-no-margin text-bold">Cetak Permintaan
-          {{formFilterCetakFungsi.get('namaFungsi').value}}</h6>
+        <div [class.opacity-0]="loadingCetak">
+          <h6 class="ion-no-margin text-bold">Cetak Permintaan</h6>
+          <!-- <small *ngIf="formFilterCetak.get('namaFungsi').value as fungsi">{{fungsi}}, {{formFilterCetak.get('namaKategori').value}}</small> -->
+        </div>
+
         <ion-spinner [class.opacity-0]="!loadingCetak" color="light" class="absolute"></ion-spinner>
       </button>
     </div>
