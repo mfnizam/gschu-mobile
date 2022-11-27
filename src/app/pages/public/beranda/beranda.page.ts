@@ -6,7 +6,7 @@ import { PermintaanService } from '../permintaan/permintaan.service';
 import { BerandaService, Kategori } from './beranda.service';
 
 import { AuthService } from 'app/services/auth/auth.service';
-import { NavController, Platform } from '@ionic/angular';
+import { AlertController, NavController, Platform } from '@ionic/angular';
 import { StorageService } from 'app/services/storage/storage.service';
 import { AkunService } from '../akun/akun.service';
 
@@ -51,7 +51,8 @@ export class BerandaPage implements OnDestroy {
     private _user: UserService,
     private _auth: AuthService,
     private _storage: StorageService,
-    private _akun: AkunService
+    private _akun: AkunService,
+    private _alert: AlertController
   ) {
     this.isDesktop = this._platform.platforms().includes('desktop');
     this._user.user$
@@ -99,7 +100,7 @@ export class BerandaPage implements OnDestroy {
       if ((this.user?.atasan || this.user?.penyetuju)) {
         this.isMtLoading = false;
         this.menungguPersetujuan = res.persetujuan.persetujuan;
-        this.totalPermintaanTerakhir = Number(res.persetujuan.total) > 99 ? '99+' : res.persetujuan.total;
+        this.totalMenungguPersetujuan = Number(res.persetujuan.total) > 99 ? '99+' : res.persetujuan.total;
       }
 
       // done refresher
@@ -129,6 +130,16 @@ export class BerandaPage implements OnDestroy {
         if (kategoriLokal) this.kategori = kategoriLokal;
         console.log(err)
       })
+  }
+
+  async openUlasan(ulasan){
+    let alert = await this._alert.create({
+      header: 'Ulasan Permintaan',
+      message: ulasan,
+      mode: 'ios',
+      buttons: [{ text: 'Tutup', role: 'cancel'}]
+    })
+    alert.present();
   }
 
   ngOnDestroy(): void {

@@ -1,0 +1,83 @@
+<ion-header class="ion-no-border drop-shadow-md">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="-mr-4">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title><b>Atur Kategori</b></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="grid gap-3">
+    <div *ngFor="let kat of kategori" class="ion-padding border rounded-lg flex items-center gap-2"
+      (click)="openEditKategori(modalUbahKategori, kat)">
+      <div class="flex-1">
+        <div><b>{{kat.nama}}</b></div>
+        <div *ngIf="!kat.atasan" class="text-medium"><small>Tanpa TTD Atasan</small></div>
+        <div *ngIf="kat.diselesaikanPemohon" class="text-medium">
+          <small>Dapat Diselesaikan Oleh Pemohon</small>
+        </div>
+      </div>
+      <ion-icon name="chevron-forward"></ion-icon>
+    </div>
+  </div>
+
+
+  <ion-modal #modalUbahKategori class="items-end" style="--height: 515px;" (didDismiss)="modalUbahKategoriDismiss()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title><b>Ubah Kategori</b></ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <form [formGroup]="formUbahKategori" (submit)="ubahKategori(modalUbahKategori)">
+          <ion-list>
+            <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+              style="--highlight-background: var(--border-color); --full-highlight-height: 1px;">
+              <ion-label position="floating" color="medium" class="ion-text-capitalize">Nama Kategori</ion-label>
+              <ion-input formControlName="nama" class="-mb-2"></ion-input>
+            </ion-item>
+            <ion-item fill="outline" class="item-rounded-xl ion-margin-bottom"
+              style="--highlight-background: var(--border-color); --full-highlight-height: 1px;">
+              <ion-label position="floating" color="medium" class="ion-text-capitalize">Kode Kategori</ion-label>
+              <ion-input formControlName="kode" class="-mb-2"></ion-input>
+            </ion-item>
+            <div class="ion-padding-start ion-padding-end border rounded-xl ion-margin-bottom">
+              <ion-item style="--padding-start: 0; --inner-padding-end: 0;" lines="none">
+                <ion-label style="white-space: normal;">
+                  <div class="truncate">TTD Diketahui (Atasan)</div>
+                  <small class="text-medium">Jika tidak diaktifkan maka kategori ini tidak memerlukan persetujuan atasan</small>
+                </ion-label>
+                <ion-toggle formControlName="atasan" mode="ios" style="transform: scale(0.8); margin-right: -4px;">
+                </ion-toggle>
+              </ion-item>
+            </div>
+            <div class="ion-padding-start ion-padding-end border rounded-xl">
+              <ion-item style="--padding-start: 0; --inner-padding-end: 0;" lines="none">
+                <ion-label style="white-space: normal;">
+                  <div class="truncate">Di Selesaikan Oleh Pemohon</div>
+                  <small class="text-medium">Jika tidak diaktifkan maka permintann dengan kategori ini dapat diselesaikanPemohon oleh pemohon</small>
+                </ion-label>
+                <ion-toggle formControlName="diselesaikanPemohon" mode="ios" style="transform: scale(0.8); margin-right: -4px;">
+                </ion-toggle>
+              </ion-item>
+            </div>
+          </ion-list>
+          <div class="grid grid-cols-2 gap-3 ion-margin-top">
+            <div class="bg-primary-tint text-primary ion-padding rounded-xl text-center"
+              (click)="modalUbahKategori.dismiss()">
+              <b>Batal</b>
+            </div>
+            <button type="submit"
+              class="bg-primary text-on-primary ion-padding rounded-xl flex items-center justify-center relative"
+              style="font-size: initial;">
+              <b [class.opacity-0]="loadingUbahKategori">Simpan</b>
+              <ion-spinner [class.opacity-0]="!loadingUbahKategori" class="absolute" color="light"></ion-spinner>
+            </button>
+          </div>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

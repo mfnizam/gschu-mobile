@@ -3,7 +3,7 @@
     <ion-buttons slot="start" class="-mr-4">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title><b>Cetak Perminataan</b></ion-title>
+    <ion-title><b>Cetak Permintaan</b></ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -43,7 +43,7 @@
   <div>
     <div *ngIf="!loadingDataPermintaan; else permintaanLoading">
       <div *ngIf="dataPermintaan && dataPermintaan.length > 0; else noPermintaan">
-        <small class="text-medium">{{dataPermintaan.length}} Perminataan</small>
+        <small class="text-medium">{{dataPermintaan.length}} Permintaan</small>
         <div *ngFor="let permintaan of dataPermintaan">
           {{permintaan._id}}
         </div>
@@ -127,7 +127,7 @@
       </ion-header>
       <ion-content>
         <div class="ion-padding-top ion-padding-bottom">
-          <div *ngIf="!loadingDataKategoriFungsi; else selectKategoriLoading">
+          <div *ngIf="!loadingDataSelectKategori; else selectKategoriLoading">
             <ion-radio-group *ngIf="dataSelectKategori?.length > 0; else nodataSelectKategori" [(ngModel)]="selectedKategori">
               <ion-item *ngFor="let sk of dataSelectKategori">
                 <ion-label>
@@ -211,8 +211,10 @@
 <ion-footer>
   <ion-toolbar>
     <div class="ion-padding">
-      <button [disabled]="formFilterCetak.invalid" [class.opacity-50]="formFilterCetak.invalid"
-        class="w-full bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative">
+      <!-- <button [disabled]="formFilterCetak.invalid" [class.opacity-50]="formFilterCetak.invalid" -->
+      <button
+        class="w-full bg-primary text-on-primary flex items-center justify-center text-center rounded-xl ion-padding relative"
+        (click)="printPermintaan()">
         <div [class.opacity-0]="loadingCetak">
           <h6 class="ion-no-margin text-bold">Cetak Permintaan</h6>
           <!-- <small *ngIf="formFilterCetak.get('namaFungsi').value as fungsi">{{fungsi}}, {{formFilterCetak.get('namaKategori').value}}</small> -->

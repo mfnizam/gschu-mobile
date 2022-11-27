@@ -23,7 +23,14 @@
     </div>
   </form>
   <hr class="bg-light">
+  <div class="ion-margin-bottom"><small class="text-medium">{{totalPengguna}} Pengguna</small></div>
   <div>
-    <small class="text-medium">120 Pengguna</small>
+    <div *ngFor="let pengguna of dataPengguna" class="rounded-lg ion-padding ion-margin-bottom bg-background drop-shadow-md">
+      <div class="ion-text-capitalize"><b>{{ pengguna.namaLengkap }}</b></div>
+      <div>{{pengguna.email}}</div>
+      <hr class="bg-light-shade">
+      <div>Fungsi : {{pengguna.fungsi?.nama || '-'}}</div>
+      <div>Jabatan : {{pengguna.jabatan?.nama || '-'}}</div>
+    </div>
   </div>
 </ion-content>

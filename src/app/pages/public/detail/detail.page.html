@@ -57,7 +57,7 @@
           </div>
           <div class="flex-shrink-0 text-right">
             <small class="text-medium">Tgl Permintaan</small>
-            <div><b>{{p.createAt | date:'dd MMMM yyyy'}}</b></div>
+            <div><b>{{p.createAt | date:'dd MMM yyyy'}}</b></div>
           </div>
         </div>
 
@@ -69,8 +69,7 @@
                 <b>Menunngu Persetujuan {{user?._id == p.diketahui?.oleh?._id? 'Anda' : 'Atasan'}}</b>
               </div>
               <div *ngSwitchCase="'ditolakAtasan'" class="truncate-2 text-danger">
-                <b>{{user?._id == p.diketahui?.oleh?._id? 'Anda Tolak, Menunggu Revisi' : 'Ditolak Atasan
-                  (Revisi)'}}</b>
+                <b>{{user?._id == p.diketahui?.oleh?._id? 'Anda Tolak, Menunggu Revisi' : 'Ditolak Atasan (Revisi)'}}</b>
               </div>
               <div *ngSwitchCase="'menungguPenyetuju'" class="truncate-2">
                 <b>Menunggu Persetujuan {{user?._id == p.disetujui?.oleh?._id? 'Anda' : (p.disetujui?.oleh?.fungsi?.nama
@@ -85,24 +84,39 @@
               <div *ngSwitchDefault><b>-</b></div>
             </ng-container>
           </div>
-          <div *ngIf="p.selesai">
-            <div *ngIf="p.peringkat; else noPeringkat" style="text-align: right;">
-              <small class="text-medium">Ulasan Anda</small>
-              <div class="flex" style="gap: 3px; height: 22px;">
-                <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
-                  [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
-                </ion-icon>
-              </div>
-            </div>
-            <ng-template #noPeringkat>
-              <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
-                class="pt-2 pb-2 ion-padding-start ion-padding-end rounded-lg text-center mt-2">
-                <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
-                  <small>Beri Ulasan</small>
+          <div *ngIf="p.penerima" class="text-right">
+            <small class="text-medium">Di Terima Oleh</small>
+            <div><b>{{p.penerima}}</b></div>
+          </div>
+        </div>
+        
+        <div *ngIf="p.selesai">
+          <div *ngIf="p.peringkat; else noPeringkat">
+            <hr class="bg-light">
+            <div class="flex justify-between gap-5">
+              <div class="truncate" (click)="openUlasan(p.ulasan)">
+                <small class="text-medium">Ulasan</small>
+                <div class="truncate">
+                  {{p.ulasan}}
                 </div>
               </div>
-            </ng-template>
+              <div class="text-right">
+                <small class="text-medium">&ensp;&#160;</small>
+                <div class="flex" style="gap: 3px; margin-top: 2px;">
+                  <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                    [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                  </ion-icon>
+                </div>
+              </div>
+            </div>
           </div>
+          <ng-template #noPeringkat>
+            <div *ngIf="p.user?._id == user?._id" class="p-2 rounded-lg border text-center ion-margin-top">
+              <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
+                <small>Beri Ulasan Permintaan Ini</small>
+              </div>
+            </div>
+          </ng-template>
         </div>
       </div>
 
@@ -673,29 +687,36 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="jenisPermintaan == 'persetujuan' && 
-        p.disetujui?.status == 1 && 
+      <ng-container *ngIf="p.disetujui?.status == 1 && 
         (p.diketahui?.status == 1 || p.diketahui.disabled) && 
         !p.selesai && user?.penyetuju">
-        <div [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
+        <div *ngIf="jenisPermintaan == 'persetujuan'" [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
           class="ion-padding rounded-xl flex items-center justify-center gap-3" (click)="selesai(p._id)">
+          <ion-icon name="checkmark-outline" style="font-size: 20pt; margin-top: -4px; margin-bottom: -2px;"></ion-icon>
+          <b>Konfirmasi Selesai</b>
+        </div>
+        <div *ngIf="jenisPermintaan == 'permintaan' && p.kategori.diselesaikanPemohon && !p.selesai" [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
+          class="ion-padding rounded-xl flex items-center justify-center gap-3 ion-margin-bottom" (click)="selesaiModal.present()">
           <ion-icon name="checkmark-outline" style="font-size: 20pt; margin-top: -4px; margin-bottom: -2px;"></ion-icon>
           <b>Konfirmasi Selesai</b>
         </div>
       </ng-container>
 
 
-
-      <div *ngIf="jenisPermintaan == 'persetujuan' && 
+      <!-- <div *ngIf="jenisPermintaan == 'persetujuan' && 
         ((user.atasan && (!p.diketahui?.status || p.diketahui?.status < 1) && !p.diketahui.disabled) || 
         (user.penyetuju && (!p.disetujui?.status || p.disetujui?.status < 1)))"
+        class="ion-margin-top grid grid-cols-2 gap-3"> -->
+      <div *ngIf="jenisPermintaan == 'persetujuan' && 
+        ((!p.diketahui?.status && p.diketahui?.oleh?._id == user._id) || 
+        (!p.disetujui.status && p.disetujui.oleh._id == user._id))"
         class="ion-margin-top grid grid-cols-2 gap-3">
         <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
-          class="ion-padding text-rdp rounded-xl text-center" (click)="tolakModal.present()">
+          class="ion-padding text-rdp rounded-xl text-center" (click)="openSetujuTolakModal(tolakModal)">
           <b>Tolak</b>
         </div>
         <div [ngClass]="'bg-' + p.kategori.kode + ' text-on-' + p.kategori.kode"
-          class="ion-padding text-rdp rounded-xl text-center" (click)="setujuModal.present()">
+          class="ion-padding text-rdp rounded-xl text-center" (click)="openSetujuTolakModal(setujuModal)">
           <b>Setuju</b>
         </div>
       </div>
@@ -712,7 +733,7 @@
       </ng-container>
 
       <div *ngIf="jenisPermintaan == 'permintaan'" [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
-        class="ion-padding text-rdp rounded-xl text-center" (click)="cetakPermintaan()">
+        class="ion-padding rounded-xl text-center" (click)="cetakPermintaan()">
         <b>Simpan Permintaan Sebagai PDF</b>
       </div>
 
@@ -903,8 +924,33 @@
         <button class="bg-danger text-on-danger ion-padding rounded-xl text-center relative" style="font-size: 12pt;"
           (click)="tolak(tolakModal)">
           <b>Tolak</b>
-          <!-- <b [class.opacity-0]="tolakLoading">Tolak</b> -->
-          <!-- <ion-spinner [class.opacity-0]="!tolakLoading" color="light" class="absolute"></ion-spinner> -->
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+
+<!-- TODO: Tambahkan disable button (tombol opacity) ketima nama belum diisi dan peringatan error nama penerima pada input -->
+<ion-modal #selesaiModal class="modal-konfirmasi">
+  <ng-template>
+    <div class="ion-padding ion-margin bg-background rounded-xl text-center" style="color: var(--ion-text-color, #000)">
+      <h5 [ngClass]="'text-' + permintaan?.kategori.kode" class="mt-0"><b>Konfirmasi Selesai</b></h5>
+      <div class="ion-margin-bottom"><b>Tuliskan nama penerima barang untuk konfirmasi selesai?</b></div>
+      <ion-item fill="outline" class="ion-margin-bottom item-rounded-xl"
+        style="--full-highlight-height: 1px; --highlight-background: var(--border-color);">
+        <ion-label position="floating" [color]="permintaan?.kategori.kode">Nama Penerima </ion-label>
+        <ion-input [(ngModel)]="namaPenerima" required="true" placeholder="Tulis Penerima.."
+          class="first-uppercase"></ion-input>
+      </ion-item>
+      <div class="flex items-center gap-4">
+        <button [ngClass]="'text-' + permintaan?.kategori.kode + ' bg-' + permintaan?.kategori.kode + '-tint'" class="ion-padding-vertical rounded-xl text-center" style="font-size: 12pt; padding-left: 20px; padding-right: 20px;"
+          (click)="selesaiModal.dismiss()">
+          <b>Batal</b>
+        </button>
+        <button [disabled]="!namaPenerima" [ngClass]="'text-on-' + permintaan?.kategori.kode + ' bg-' + permintaan?.kategori.kode" class="flex-1 ion-padding rounded-xl text-center relative" style="font-size: 12pt;"
+          (click)="selesaiPemohon(selesaiModal)">
+          <b>Konfirmasi Selesai</b>
         </button>
       </div>
     </div>

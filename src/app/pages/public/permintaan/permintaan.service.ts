@@ -47,4 +47,8 @@ export class PermintaanService {
   ulasan(_id, peringkat, ulasan){
     return this._http.post(environment.serverUrl + 'api/public/ulasan', { _id, peringkat, ulasan })
   }
+
+  selesaiPemohon(_id, penerima): Observable<boolean> {
+    return this._http.patch<boolean>(environment.serverUrl + 'api/public/permintaan/selesai', { _id, penerima })
+  } 
 }

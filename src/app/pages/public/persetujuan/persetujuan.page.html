@@ -12,14 +12,12 @@
       <ion-segment-button value="menunggu" style="min-width: fit-content;">
         <ion-label><b>Menunggu Persetujuan Anda</b></ion-label>
       </ion-segment-button>
-      <ion-segment-button *ngIf="user?.penyetuju; else noPenyetuju" value="diproses" style="min-width: fit-content;">
+      <ion-segment-button *ngIf="user?.penyetuju" value="diproses" style="min-width: fit-content;">
         <ion-label><b>Sedang Diproses</b></ion-label>
       </ion-segment-button>
-      <ng-template #noPenyetuju>
-        <ion-segment-button value="disetujui" style="min-width: fit-content;">
-          <ion-label><b>Anda Setujui</b></ion-label>
-        </ion-segment-button>
-      </ng-template>
+      <ion-segment-button value="disetujui" style="min-width: fit-content;">
+        <ion-label><b>Anda Setujui</b></ion-label>
+      </ion-segment-button>
       <ion-segment-button value="ditolak" style="min-width: fit-content;">
         <ion-label><b>Anda Tolak</b></ion-label>
       </ion-segment-button>
@@ -67,21 +65,35 @@
               </div>
             </div>
           </div>
-          
-          <div *ngIf="p.selesai && p.peringkat">
-            <hr class="bg-light">
-            <div class="flex justify-between">
-              <small class="text-medium">Ulasan Permintaan</small>
-              <div class="flex" style="gap: 3px;">
-                <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
-                  [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
-                </ion-icon>
+
+          <div *ngIf="p.selesai">
+            <div *ngIf="p.peringkat; else noPeringkat">
+              <hr class="bg-light">
+              <div class="flex justify-between gap-5">
+                <div class="truncate" (click)="openUlasan(p.ulasan)">
+                  <small class="text-medium">Ulasan</small>
+                  <div class="truncate">
+                    {{p.ulasan}}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <small class="text-medium">&ensp;&#160;</small>
+                  <div class="flex" style="gap: 3px; margin-top: 3px;">
+                    <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                      [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                    </ion-icon>
+                  </div>
+                </div>
               </div>
             </div>
+            <ng-template #noPeringkat>
+              <div *ngIf="p.user._id == user?._id" class="p-2 rounded-lg border text-center ion-margin-top">
+                <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
+                  <small>Beri Ulasan Permintaan Ini</small>
+                </div>
+              </div>
+            </ng-template>
           </div>
-          <!-- <div *ngIf="p.status == 'proses'" [ngClass]="' bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode" class="rounded-xl ion-padding text-center ion-margin-top" (click)="selesai(p._id)">
-            <b>Konfirmasi Selesai</b>
-          </div> -->
         </div>
       </div>
     </div>

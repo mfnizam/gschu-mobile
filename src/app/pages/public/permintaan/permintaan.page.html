@@ -42,8 +42,7 @@
                 <small class="text-medium">Jenis Permintaan</small>
                 <div class=" text-bold">{{p.kategori.nama}}</div>
               </div>
-              <div [ngClass]="'bg-' + p.kategori.kode"
-                class="flex p-2 rounded-lg rounded-lg">
+              <div [ngClass]="'bg-' + p.kategori.kode" class="flex p-2 rounded-lg rounded-lg">
                 <img [src]="'assets/icon/' + p.kategori.kode + '.png'" class="mb-px" style="width: 20px; height: 20px;">
               </div>
             </div>
@@ -69,23 +68,31 @@
               </div>
             </div>
           </div>
+          
           <div *ngIf="p.selesai">
             <div *ngIf="p.peringkat; else noPeringkat">
               <hr class="bg-light">
-              <div class="flex justify-between">
-                <small class="text-medium">Ulasan Anda</small>
-                <div class="flex" style="gap: 3px;">
-                  <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
-                    [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
-                  </ion-icon>
+              <div class="flex justify-between gap-5">
+                <div class="truncate" (click)="openUlasan(p.ulasan)">
+                  <small class="text-medium">Ulasan</small>
+                  <div class="truncate">
+                    {{p.ulasan}}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <small class="text-medium">&ensp;&#160;</small>
+                  <div class="flex" style="gap: 3px; margin-top: 3px;">
+                    <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                      [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                    </ion-icon>
+                  </div>
                 </div>
               </div>
             </div>
             <ng-template #noPeringkat>
-              <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
-                class="p-2 rounded-lg text-center mt-2">
+              <div class="p-2 rounded-lg border text-center ion-margin-top">
                 <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
-                  <small>Beri Ulasan</small>
+                  <small>Beri Ulasan Permintaan Ini</small>
                 </div>
               </div>
             </ng-template>

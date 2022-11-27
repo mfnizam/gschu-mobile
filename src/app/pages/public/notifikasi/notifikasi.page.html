@@ -26,9 +26,11 @@
                   style="max-width: 20px; max-height: 20px;">
               </div>
               <div>
-                <h5 class="ion-no-margin flex items-start truncate-2 text-bold">
-                  <span *ngIf="!not.dibaca" class="bg-danger rounded-full" style="width: 8px; height: 8px; margin-top: 6px; display: inline-block;"></span> 
-                  <span> {{not.nama}}</span>
+                <h5 class="ion-no-margin flex items-start truncate-2 text-bold relative">
+                  <span *ngIf="!not.dibaca">
+                    <span class="absolute bg-danger rounded-full" style="top: 6px; width: 8px; height: 8px; display: inline-block;"></span> &nbsp;&nbsp;
+                  </span>
+                  <span>{{not.nama}}</span>
                 </h5>
                 <div class="truncate-2">{{not.konten}}</div>
               </div>

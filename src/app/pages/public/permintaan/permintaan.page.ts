@@ -6,6 +6,7 @@ import { BerandaService } from '../beranda/beranda.service';
 import { PermintaanService } from './permintaan.service';
 import * as moment from 'moment';
 import { FormBuilder } from '@angular/forms';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-permintaan',
@@ -45,7 +46,8 @@ export class PermintaanPage implements OnDestroy {
     private _formBuilder: FormBuilder,
     private _permintaan: PermintaanService,
     private _user: UserService,
-    private _beranda: BerandaService
+    private _beranda: BerandaService,
+    private _alert: AlertController
   ) {
     this._user.user$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -151,5 +153,15 @@ export class PermintaanPage implements OnDestroy {
         }
       } : {}
     })
+  }
+
+  async openUlasan(ulasan){
+    let alert = await this._alert.create({
+      header: 'Ulasan Permintaan',
+      message: ulasan,
+      mode: 'ios',
+      buttons: [{ text: 'Tutup', role: 'cancel'}]
+    })
+    alert.present();
   }
 }

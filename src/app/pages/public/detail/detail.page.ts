@@ -9,6 +9,8 @@ import { takeUntil } from 'rxjs/operators';
 import { BerandaService, Kategori } from '../beranda/beranda.service';
 import { PersetujuanService } from '../persetujuan/persetujuan.service';
 import { PermintaanService } from '../permintaan/permintaan.service';
+import { PdfService } from 'app/services/pdf/pdf.service';
+import { TitleCasePipe } from '@angular/common';
 /* 
   TODO:
     - optimasi halaman detail
@@ -35,7 +37,9 @@ export class DetailPage implements OnDestroy {
 
   kategori: Kategori = {} as Kategori;
   catatanTolak;
-  tolakLoading = false;
+
+  namaPenerima;
+  selesaiLoading = false;
 
   constructor(
     private _route: ActivatedRoute,
@@ -45,13 +49,16 @@ export class DetailPage implements OnDestroy {
     private _beranda: BerandaService,
     private _toast: ToastController,
     private _loading: LoadingController,
-    private _alert: AlertController
+    private _alert: AlertController,
+    private _pdf: PdfService,
+    private _capitalize: TitleCasePipe
   ) {
     this._route.params
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(params => {
         this.idPermintaan = params.id;
         this.jenisPermintaan = params.jenis;
+        console.log(this.jenisPermintaan)
       })
 
     this._user.user$
@@ -117,7 +124,7 @@ export class DetailPage implements OnDestroy {
     // if (disetujui?.oleh) disetujui.oleh['inisial'] = this.getInitial(disetujui.oleh.namaLengkap)
     // if (disetujui?.oleh?.foto) disetujui.oleh['foto'] = disetujui.oleh.foto;
 
-    
+
     // if (this.permintaan.kategori == 'snack') {
     //   let perihal = this.permintaan.permintaan.perihal
     //   this.permintaan.permintaan.perihal = perihal.length > 2 ? perihal.slice(0, -1).join(', ') + ' & ' + perihal.slice(-1) : perihal.join(' & ');
@@ -171,6 +178,19 @@ export class DetailPage implements OnDestroy {
         //console.log(err)
         this.showMsg(err, 'Gagal menolak permintaan. Coba beberapa saat lagi.')
       })
+  }
+
+  async openSetujuTolakModal(modal) {
+    if (this.permintaan.diketahui.oleh && this.permintaan.disetujui.oleh._id == this.user._id && this.permintaan.diketahui.status !== 1) {
+      let permitedAlert = await this._alert.create({
+        message: 'Permintaan ini ditolak / belum disetujui atasan.',
+        mode: 'ios',
+        buttons: [{ text: 'Tutup' }]
+      })
+      permitedAlert.present();
+      return;
+    }
+    modal.present();
   }
 
   async setuju(modal) {
@@ -231,12 +251,58 @@ export class DetailPage implements OnDestroy {
       })
   }
 
-  async cetakPermintaan(){
-    let alert = await this._alert.create({
-      header: 'Fitur ini belum tersedia.',
+  async selesaiPemohon(modal) {
+    let loading = await this._loading.create({
+      message: 'Memproses konfirmasi. Mohon tunggu...',
       mode: 'ios',
-      buttons: [{ text: 'Tutup', role: 'cancel'}]
+      backdropDismiss: false,
+      duration: 60000
+    })
+    modal.dismiss();
+    loading.present();
+    this._permintaan.selesaiPemohon(this.permintaan._id, this.namaPenerima)
+      .subscribe(res => {
+        console.log(res)
+        loading.dismiss();
+        this.ambilPermintaan();
+      }, err => {
+        console.log(err)
+        loading.dismiss();
+        this.showMsg(err, 'Gagal konfirmasi selesai permintaan. Coba beberapa saat lagi.')
+      })
+  }
+
+  async openUlasan(ulasan) {
+    let alert = await this._alert.create({
+      header: 'Ulasan Permintaan',
+      message: ulasan,
+      mode: 'ios',
+      buttons: [{ text: 'Tutup', role: 'cancel' }]
     })
     alert.present();
+  }
+
+  async cetakPermintaan() {
+    // let alert = await this._alert.create({
+    //   header: 'Fitur ini belum tersedia.',
+    //   mode: 'ios',
+    //   buttons: [{ text: 'Tutup', role: 'cancel'}]
+    // })
+    // alert.present();
+    console.log(this.user)
+
+    console.log(this._capitalize.transform(this.permintaan.noSurat))
+    this._pdf.generate({ 
+      noSurat: this.permintaan.noSurat,
+      tglPermintaan: new Date(this.permintaan.createAt),
+      wilayahKerja: this.user.fungsi.organisasi.nama,
+      fungsi: this.user.fungsi.nama,
+      perihal: this.permintaan.kategori.nama,
+      alamat: this.permintaan.permintaan.alamat,
+      namaRequester: this._capitalize.transform(this.user.namaLengkap), // tambahkan funsi capitalisasi
+      jabatanRequester: this._capitalize.transform(this.user.jabatan.nama), // tambahkan funsi capitalisasi
+      namaPenyetuju: this._capitalize.transform(this.permintaan.disetujui.oleh.namaLengkap), // tambahkan funsi capitalisasi
+      jabatanPenyetuju: this._capitalize.transform(this.permintaan.disetujui.oleh.jabatan.nama), // tambahkan funsi capitalisasi
+    });
   }
 }

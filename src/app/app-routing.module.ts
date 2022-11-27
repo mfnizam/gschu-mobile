@@ -60,6 +60,9 @@ const routes: Routes = [
     path: 'master/jabatan',
     loadChildren: () => import('./pages/public/master/jabatan/jabatan.module').then( m => m.JabatanPageModule)
   },{
+    path: 'kategori',
+    loadChildren: () => import('./pages/public/kategori/kategori.module').then( m => m.KategoriPageModule)
+  },{
     path: 'cetak',
     loadChildren: () => import('./pages/public/cetak/cetak.module').then( m => m.CetakPageModule)
   },{
@@ -93,6 +96,7 @@ const routes: Routes = [
     path: '**',
     redirectTo: ''
   }
+
 ];
 
 @NgModule({

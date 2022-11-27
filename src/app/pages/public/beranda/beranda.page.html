@@ -25,8 +25,8 @@
     </div>
 
 
-    <div class="ion-margin-bottom">
-      <div class="bg-background drop-shadow-md ion-padding rounded-xl flex items-center gap-3">
+    <div class="ion-margin-bottom bg-background rounded-xl ion-padding">
+      <div class="drop-shadow-md flex items-center gap-3">
         <div class="bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
           style="height: 50px; width: 50px;" routerLink="/akun">
           <img *ngIf="user?.foto; else noFoto" [src]="user?.foto" class="h-full w-full object-cover">
@@ -40,6 +40,15 @@
         </div>
         <div class="flex ion-no-margin" style="font-size: 20pt; margin-right: -8px;" (click)="pilihanModal.present()">
           <ion-icon name="ellipsis-vertical"></ion-icon>
+        </div>
+      </div>
+      <!-- <hr class="bg-light-shade ion-margin-top"> -->
+      <div class="flex gap-5 text-center ion-margin-top">
+        <div class="flex-1 border rounded-lg p-2" routerLink="/permintaan">Permintaan Anda</div>
+        <div *ngIf="user?.atasan || user?.penyetuju" class="relative flex-1 border rounded-lg p-2" routerLink="/persetujuan">
+          Persetujuan Anda
+          <ion-badge *ngIf="totalMenungguPersetujuan" mode="ios" color="primary" class="absolute"
+          style="right: -5px; top: -5px; font-size: 8pt; --padding-top: 4px; --padding-start: 5px; --padding-end: 5px;">{{totalMenungguPersetujuan}}</ion-badge>
         </div>
       </div>
     </div>
@@ -74,7 +83,7 @@
               <img src="assets/icon/furniture.png" style="max-width:28px; max-height: 28px;">
             </div>
           </div>
-          <small class="leading-3" style="white-space: break-spaces;">Permintaan Furniture</small>
+          <small class="leading-3" style="white-space: break-spaces;">Furniture / Peralatan Rumah</small>
         </div>
         <div class="bg-rumput text-white rounded-lg p-2 drop-shadow-md flex items-center"
           routerLink="/form/rumput">
@@ -173,7 +182,7 @@
         <span class="truncate">Menng. Persetujuan Anda</span>
         <small class="text-medium flex-shrink-0" routerLink="/persetujuan">
           Lihat Semua
-          <span *ngIf="totalMenungguPersetujuan as tmp">({{tmp}})</span>
+          <span *ngIf="totalMenungguPersetujuan">({{totalMenungguPersetujuan}})</span>
         </small>
       </h4>
       <div *ngIf="!isMtLoading; else mtLoading">
@@ -291,20 +300,27 @@
             <div *ngIf="p.selesai">
               <div *ngIf="p.peringkat; else noPeringkat">
                 <hr class="bg-light">
-                <div class="flex justify-between">
-                  <small class="text-medium">Ulasan Anda</small>
-                  <div class="flex" style="gap: 3px;">
-                    <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
-                      [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
-                    </ion-icon>
+                <div class="flex justify-between gap-5">
+                  <div class="truncate" (click)="openUlasan(p.ulasan)">
+                    <small class="text-medium">Ulasan</small>
+                    <div class="truncate">
+                      {{p.ulasan}}
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <small class="text-medium">&ensp;&#160;</small>
+                    <div class="flex" style="gap: 3px; margin-top: 2px;">
+                      <ion-icon *ngFor="let r of [1,2,3,4,5]" name="star"
+                        [ngClass]="r <= p.peringkat? 'text-warning' : 'text-light-shade'" style="font-size: 12pt;">
+                      </ion-icon>
+                    </div>
                   </div>
                 </div>
               </div>
               <ng-template #noPeringkat>
-                <div [ngClass]="'bg-' + p.kategori.kode + '-tint text-' + p.kategori.kode"
-                  class="p-2 rounded-lg text-center mt-2">
+                <div class="p-2 rounded-lg border text-center ion-margin-top">
                   <div class="-mt-1 text-bold" [routerLink]="'/ulasan/' + p._id">
-                    <small>Beri Ulasan Untuk Permintaan Ini</small>
+                    <small>Beri Ulasan Permintaan Ini</small>
                   </div>
                 </div>
               </ng-template>

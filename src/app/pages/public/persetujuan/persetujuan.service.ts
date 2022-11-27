@@ -15,22 +15,22 @@ export class PersetujuanService {
   ) { }
 
   persetujuan(jenis = 'menunggu', opsi = {}, ): Observable<any> {
-    return this._http.get(environment.serverUrl + 'api/' + (this._user.user.atasan? 'atasan' : 'penyetuju') + '/' + jenis, { params: opsi })
+    return this._http.get(environment.serverUrl + 'api/' + (this._user.user.penyetuju? 'penyetuju' : 'atasan') + '/' + jenis, { params: opsi })
   }
 
   detail(_id): Observable<{ permintaan: any }> {
-    return this._http.get<{ permintaan: any }>(environment.serverUrl + 'api/' + (this._user.user.atasan? 'atasan' : 'penyetuju') + '/persetujuan/' + _id)
+    return this._http.get<{ permintaan: any }>(environment.serverUrl + 'api/' + (this._user.user.penyetuju? 'penyetuju' : 'atasan') + '/persetujuan/' + _id)
   }
 
   setuju(_id): Observable<boolean> {
-    return this._http.patch<boolean>(environment.serverUrl + 'api/' + (this._user.user.atasan? 'atasan' : 'penyetuju') + '/persetujuan/setuju', { _id })
+    return this._http.patch<boolean>(environment.serverUrl + 'api/' + (this._user.user.penyetuju? 'penyetuju' : 'atasan') + '/persetujuan/setuju', { _id })
   }
 
   tolak(_id, catatan): Observable<boolean> {
-    return this._http.patch<boolean>(environment.serverUrl + 'api/' + (this._user.user.atasan? 'atasan' : 'penyetuju') + '/persetujuan/tolak', { _id, catatan })
+    return this._http.patch<boolean>(environment.serverUrl + 'api/' + (this._user.user.penyetuju? 'penyetuju' : 'atasan') + '/persetujuan/tolak', { _id, catatan })
   }
 
   selesai(_id): Observable<boolean> {
     return this._http.patch<boolean>(environment.serverUrl + 'api/penyetuju/persetujuan/selesai', { _id })
-  }  
+  } 
 }

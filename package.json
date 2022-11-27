@@ -34,6 +34,8 @@
     "@capacitor/status-bar": "4.0.1",
     "@ionic/angular": "^6.1.9",
     "ion2-calendar": "^3.5.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.25",
     "moment": "^2.29.4",
     "object-to-formdata": "^4.4.2",
     "rxjs": "~6.6.0",

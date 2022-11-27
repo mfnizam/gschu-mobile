@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { User, UserService } from 'app/services/user/user.service';
 import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
@@ -32,7 +32,8 @@ export class PersetujuanPage implements OnDestroy {
     private _beranda: BerandaService,
     private _permintaan: PermintaanService,
     private _loading: LoadingController,
-    private _toast: ToastController
+    private _toast: ToastController,
+    private _alert: AlertController
   ) {
     this._user.user$
     .pipe(takeUntil(this._unsubscribeAll))
@@ -112,6 +113,16 @@ export class PersetujuanPage implements OnDestroy {
       //console.log(err)
       this.showMsg(err, 'Gagal menyelesaikan permintaan. Coba beberapa saat lagi.')
     })
+  }
+
+  async openUlasan(ulasan){
+    let alert = await this._alert.create({
+      header: 'Ulasan Permintaan',
+      message: ulasan,
+      mode: 'ios',
+      buttons: [{ text: 'Tutup', role: 'cancel'}]
+    })
+    alert.present();
   }
 
   async showMsg(err, msg = 'Gagal memuat data permintaan. Coba beberapa saat lagi', color = 'danger') {

@@ -69,7 +69,7 @@ export class CetakPage {
     if (!this.selectedFungsi?._id) return;
     this.formFilterCetak.patchValue({
       fungsi: this.selectedFungsi._id,
-      namaFungsi: this.selectedFungsi?.nama + ' - ' + this.selectedFungsi.organisasi.nama + (this.selectedFungsi.organisasi.tipe == 'wilayah'? ' - ' + this.selectedFungsi.organisasi.zona.nama : ''),
+      namaFungsi: this.selectedFungsi?.nama + ' - ' + this.selectedFungsi.organisasi.nama + (this.selectedFungsi.organisasi.tipe == 'wilayah' ? ' - ' + this.selectedFungsi.organisasi.zona.nama : ''),
     });
     modal.dismiss()
   }
@@ -91,46 +91,47 @@ export class CetakPage {
     this.selectedKategori = null;
   }
 
-  selectDateChange(e){
+  selectDateChange(e) {
     this.selectedDate = {
       from: moment(e.time).format('DD MMM YYYY'), //new Date(e.time).toISOString().split('T')[0];
       to: null
     }
   }
 
-  selectDate(modal){
+  selectDate(modal) {
     if (!this.selectedDate.from) return
     modal.dismiss();
     this.formFilterCetak.patchValue({
       tanggalStart: this.selectedDate.from,
       tanggalEnd: this.selectedDate.to,
-      tanggalCombine: this.selectedDate.from + (this.selectedDate.to? ' - ' + this.selectedDate.to : '')
+      tanggalCombine: this.selectedDate.from + (this.selectedDate.to ? ' - ' + this.selectedDate.to : '')
     })
   }
 
   deleteSelectedDate(modal) {
     modal.dismiss();
     this.selectedDate = { from: null, to: null };
-    this.formFilterCetak.patchValue({ tanggalStart: null, tanggalEnd: null, tanggalCombine: null})
+    this.formFilterCetak.patchValue({ tanggalStart: null, tanggalEnd: null, tanggalCombine: null })
   }
 
-  async submitFilter(){
+  async submitFilter() {
     let loading = await this.loading.create({
       mode: 'ios',
       message: 'Memuat data permintaan ' + this.selectedFungsi?.nama
     });
     loading.present();
     this.cetak.getPermintaan(this.formFilterCetak.value)
-    .subscribe(res => {
-      console.log(res)
-      this.dataPermintaan = res.permintaan;
-      loading.dismiss();
-    }, err => {
-      console.log(err);
-      loading.dismiss();
-    })
+      .subscribe(res => {
+        console.log(res)
+        this.dataPermintaan = res.permintaan;
+        loading.dismiss();
+      }, err => {
+        console.log(err);
+        loading.dismiss();
+      })
   }
 
-  async printPermintaan(){
+  printPermintaan() {
+    
   }
 }
