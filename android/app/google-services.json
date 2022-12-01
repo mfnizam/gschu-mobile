@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "156295582059",
+    "project_id": "gschu-app",
+    "storage_bucket": "gschu-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156295582059:android:08e41fa14daab0f427bc2e",
+        "android_client_info": {
+          "package_name": "com.gschu.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156295582059-4or7nipbk56t714uh2a6rb4kgiva1gsh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEZY_XamKmdgUFthfl11G9gJWEG1Yenyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156295582059-4or7nipbk56t714uh2a6rb4kgiva1gsh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

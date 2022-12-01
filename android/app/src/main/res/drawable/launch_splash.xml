@@ -3,7 +3,7 @@
   <!-- You can add as many layer as you want as long as they are drawable bitmaps or vectors -->
   <item
     android:id="@+id/b_splash"
-    android:drawable="@color/colorWhite"/>
+    android:drawable="@android:color/white"/>
   <item>
     <bitmap
       android:gravity="center"

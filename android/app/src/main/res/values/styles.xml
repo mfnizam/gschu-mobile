@@ -13,14 +13,13 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
-        <item name="android:statusBarColor">@color/colorWhite</item>
+        <item name="android:statusBarColor">@android:color/white</item>
         <!--        <item name="colorControlNormal">@color/colorPrimary</item>-->
-        <item name="colorControlActivated">@color/colorWhite</item>
+        <item name="colorControlActivated">@android:color/white</item>
     </style>
 
 
-    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
       <item name="android:background">@drawable/launch_splash</item>
-<!--      <item name="android:background">@drawable/splash</item>-->
     </style>
 </resources>
