@@ -1,7 +1,7 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { RouteReuseStrategy, PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, TitleCasePipe } from '@angular/common';
 import localeId from '@angular/common/locales/id';
 registerLocaleData(localeId);
 
@@ -29,7 +29,8 @@ import { AuthGuard, NonAuthGuard } from './services/auth/auth.guard';
     { provide: LOCALE_ID, useValue: 'id-ID'},
     { provide : HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     AuthGuard,
-    NonAuthGuard
+    NonAuthGuard,
+    TitleCasePipe
   ],
   bootstrap: [AppComponent],
 })

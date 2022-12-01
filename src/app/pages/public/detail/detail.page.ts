@@ -50,8 +50,7 @@ export class DetailPage implements OnDestroy {
     private _toast: ToastController,
     private _loading: LoadingController,
     private _alert: AlertController,
-    private _pdf: PdfService,
-    private _capitalize: TitleCasePipe
+    private _pdf: PdfService
   ) {
     this._route.params
       .pipe(takeUntil(this._unsubscribeAll))
@@ -283,26 +282,61 @@ export class DetailPage implements OnDestroy {
   }
 
   async cetakPermintaan() {
-    // let alert = await this._alert.create({
-    //   header: 'Fitur ini belum tersedia.',
-    //   mode: 'ios',
-    //   buttons: [{ text: 'Tutup', role: 'cancel'}]
-    // })
-    // alert.present();
-    console.log(this.user)
+    let pdf;
 
-    console.log(this._capitalize.transform(this.permintaan.noSurat))
-    this._pdf.generate({ 
-      noSurat: this.permintaan.noSurat,
-      tglPermintaan: new Date(this.permintaan.createAt),
-      wilayahKerja: this.user.fungsi.organisasi.nama,
-      fungsi: this.user.fungsi.nama,
-      perihal: this.permintaan.kategori.nama,
-      alamat: this.permintaan.permintaan.alamat,
-      namaRequester: this._capitalize.transform(this.user.namaLengkap), // tambahkan funsi capitalisasi
-      jabatanRequester: this._capitalize.transform(this.user.jabatan.nama), // tambahkan funsi capitalisasi
-      namaPenyetuju: this._capitalize.transform(this.permintaan.disetujui.oleh.namaLengkap), // tambahkan funsi capitalisasi
-      jabatanPenyetuju: this._capitalize.transform(this.permintaan.disetujui.oleh.jabatan.nama), // tambahkan funsi capitalisasi
-    });
+    switch (this.permintaan.kategori.kode) {
+      case 'rdp':
+        pdf = this._pdf.generatePermintaanRDP(this.permintaan);
+        break;
+
+      case 'furniture':
+        pdf = this._pdf.generatePermintaanFurniture(this.permintaan);
+        break;
+
+      case 'rumput':
+        pdf = this._pdf.generatePermintaanRumput(this.permintaan);
+        break;
+
+      case 'ac':
+        pdf = this._pdf.generatePermintaanAc(this.permintaan);
+        break;
+
+      case 'atk':
+        pdf = this._pdf.generatePermintaanAtk(this.permintaan);
+        break;
+
+      case 'snack':
+        pdf = this._pdf.generatePermintaanSnack(this.permintaan);
+        break;
+
+      case 'krp':
+        pdf = this._pdf.generatePermintaanKrp(this.permintaan);
+        break;
+
+      case 'mess':
+        pdf = this._pdf.generatePermintaanMess(this.permintaan);
+        break;
+
+      case 'dokumen':
+        pdf = this._pdf.generatePermintaanDokumen(this.permintaan);
+        break;
+
+      case 'galon':
+        pdf = this._pdf.generatePermintaanGalon(this.permintaan);
+        break;
+
+      case 'acara':
+        pdf = this._pdf.generatePermintaanAcara(this.permintaan);
+        break;
+
+      case 'peralatan':
+        pdf = this._pdf.generatePermintaanPeralatan(this.permintaan);
+        break;
+
+      default:
+        break;
+    }
+
+    if (pdf) window.open(pdf);
   }
 }

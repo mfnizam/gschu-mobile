@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
@@ -17,7 +17,6 @@ const routes: Routes = [{ path: '', component: DetailPage }];
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [DetailPage],
-  providers: [TitleCasePipe]
+  declarations: [DetailPage]
 })
 export class DetailPageModule {}

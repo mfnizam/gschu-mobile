@@ -116,10 +116,10 @@ export class FormPage implements OnDestroy {
         tgl: [null, [Validators.required]],
         pengambilan: [null, [Validators.required]],
         perihal: this._formBuilder.group({
-          snackPagi: [null],
-          makanSiang: [null],
-          snackSore: [null],
-          makanMalam: [null],
+          snack_pagi: [null],
+          makan_siang: [null],
+          snack_sore: [null],
+          makan_malam: [null],
         }),
         costCenter: [null],
         GLAccount: [null],
@@ -377,6 +377,7 @@ export class FormPage implements OnDestroy {
 
 
     let value = JSON.parse(JSON.stringify(this.permintaanForm.value));
+    value.catatan = value.catatan.replace(/\n+$/, "");
     let variasiFormData = new FormData();
     if (value.variasi) {
       for (var i = 0; i < value.variasi.length; i++) {
