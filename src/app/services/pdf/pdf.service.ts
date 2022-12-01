@@ -77,9 +77,9 @@ export class PdfService {
         };
 
         let rowLength = Math.max.apply(null, Object.keys(data.row.cells));
-        if (data.row.index === 1 && data.column.index == rowLength) data.doc.addImage('assets/icon/logo_pdf.png', data.cell.x - 50, data.cell.y, 50, 13.72);
+        if (data.row.index === 1 && data.column.index == rowLength) data.doc.addImage('assets/icons/logo_pdf.png', data.cell.x - 50, data.cell.y, 50, 13.72);
         if (title === 'approved') doc.addImage(
-          'assets/icon/approved.png',
+          'assets/icons/approved.png',
           data.cell.x + (data.cell.width / 2) - 18.8,
           data.cell.y + (data.cell.height / 2) - 9.51,
           37.6,
@@ -87,7 +87,7 @@ export class PdfService {
         );
 
         if (title === 'request') data.doc.addImage(
-          'assets/icon/request.png',
+          'assets/icons/request.png',
           data.cell.x + (data.cell.width / 2) - 18.8,
           data.cell.y + (data.cell.height / 2) - 9.51,
           37.6,
