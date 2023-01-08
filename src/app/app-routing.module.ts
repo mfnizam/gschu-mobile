@@ -89,6 +89,9 @@ const routes: Routes = [
     path: 'sandipemberitahuan',
     loadChildren: () => import('./pages/auth/sandipemberitahuan/sandipemberitahuan.module').then( m => m.SandipemberitahuanPageModule)
   },{
+    path: 'privasi',
+    loadChildren: () => import('./pages/privasi/privasi.module').then( m => m.PrivasiPageModule)
+  },{
     path: '',
     loadChildren: () => import('./pages/public/beranda/beranda.module').then( m => m.BerandaPageModule),
     canActivate: [AuthGuard],
@@ -96,6 +99,7 @@ const routes: Routes = [
     path: '**',
     redirectTo: ''
   }
+
 
 ];
 

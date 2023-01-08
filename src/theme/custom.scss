@@ -1,6 +1,32 @@
 // Font
-@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+/* nunito-regular - vietnamese_latin-ext_latin_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-regular.woff') format('woff'), /* Modern Browsers */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-regular.svg#Nunito') format('svg'); /* Legacy iOS */
+}
+/* nunito-700 - vietnamese_latin-ext_latin_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-700.woff') format('woff'), /* Modern Browsers */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('/assets/fonts/nunito-v25-vietnamese_latin-ext_latin_cyrillic-ext_cyrillic-700.svg#Nunito') format('svg'); /* Legacy iOS */
+}
 
 // .ion-page {
 //   background: var(--ion-background-color, #fff);
@@ -1006,6 +1032,10 @@
   border-right: 1px solid;
 }
 
+.border-t {
+  border-top: 1px solid;
+}
+
 .border-b {
   border-bottom: 1px solid;
 }
@@ -1016,6 +1046,10 @@
 
 .border-primary {
   border-color: var(--ion-color-primary);
+}
+
+.border-light {
+  border-color: var(--ion-color-light);
 }
 
 .border-danger {
@@ -1420,6 +1454,10 @@
   --ion-color-primary: var(--ion-color-peralatan);
 }
 
+ion-item:last-child {
+  --inner-border-width: 0;
+}
+
 .modal-date-sheet-custom {
   &::part(content) {
     width: 100%;
@@ -1667,11 +1705,14 @@
 }
 
 ion-accordion{
-  overflow: visible !important;
-  
-  &::part(content){
-    overflow: visible !important;
+  ion-item[slot="header"] {
+    --background: #ededed;
   }
+  // overflow: visible !important;
+  
+  // &::part(content){
+  //   overflow: visible !important;
+  // }
 }
 
 // .month-picker.primary .month-packer-item.this-month button {

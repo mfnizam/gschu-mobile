@@ -27,7 +27,7 @@
 
     <div class="ion-margin-bottom bg-background rounded-xl ion-padding">
       <div class="drop-shadow-md flex items-center gap-3">
-        <div class="bg-background border text-primary rounded-full overflow-hidden flex items-center justify-center"
+        <div class="bg-background text-primary rounded-full overflow-hidden flex items-center justify-center"
           style="height: 50px; width: 50px;" routerLink="/akun">
           <img *ngIf="user?.foto; else noFoto" [src]="user?.foto" class="h-full w-full object-cover">
           <ng-template #noFoto>
@@ -119,7 +119,7 @@
               <img src="assets/icons/snack.png" style="max-width:28px; max-height: 28px;">
             </div>
           </div>
-          <small class="leading-3" style="white-space: break-spaces;">Snack & Makanan Ringan</small>
+          <small class="leading-3" style="white-space: break-spaces;">Snack & Makanan Berat</small>
         </div>
         <div class="bg-krp text-white rounded-lg p-2 drop-shadow-md flex items-center"
           routerLink="/form/krp">
@@ -363,7 +363,7 @@
 </ion-content>
 
 <ion-modal #pilihanModal class="items-end"
-  [style.--height]="user?.atasan || user?.penyetuju? '216px' : '168px'">
+  [style.--height]="user?.atasan || user?.penyetuju? '264px' : '216px'">
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -372,6 +372,10 @@
     </ion-header>
     <ion-content>
       <ion-list>
+        <ion-item routerLink="/akun" (click)="pilihanModal.dismiss()">
+          <ion-label>Lihat Profil Anda</ion-label>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-item>
         <ion-item routerLink="/permintaan" (click)="pilihanModal.dismiss()">
           <ion-label>Lihat Permintaan Anda</ion-label>
           <ion-icon name="chevron-forward"></ion-icon>

@@ -47,7 +47,7 @@ export class AppComponent implements OnDestroy, OnInit {
     // check auth status
     this._auth.authCheck()
       .pipe(first(), takeUntil(this._unsubscribeAll))
-      .subscribe()
+      .subscribe(res => {})
 
     // network listener
     Network.addListener('networkStatusChange', status => {

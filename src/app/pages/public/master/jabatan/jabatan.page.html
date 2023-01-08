@@ -20,15 +20,12 @@
 
   <div *ngIf="!loadingDataJabatan; else jabatanLoading" style="margin-bottom: 72px;">
     <div *ngIf="dataJabatan && dataJabatan.length > 0; else noJabatan">
-      <ng-container *ngFor="let ma of dataJabatan;">
+      <!-- <ng-container *ngFor="let ma of dataJabatan;">
         <div class="bg-background rounded-xl drop-shadow-md ion-padding ion-margin-bottom">
           <div class="text-bold leading-tight ion-text-capitalize truncate-2" style="max-width: 90%;">{{ma.nama}}</div>
           <div class="mt-1">
-            <small>{{ma.fungsi?.nama}} - {{ma.fungsi?.organisasi?.nama + (ma.fungsi?.organisasi?.tipe == 'wilayah'? ' -
-              ' +
-              ma.fungsi.organisasi.zona?.nama : '')}}</small>
+            <small>{{ma.fungsi?.nama}} - {{ma.fungsi?.organisasi?.nama + (ma.fungsi?.organisasi?.tipe == 'wilayah'? ' - ' + ma.fungsi.organisasi.zona?.nama : '')}}</small>
           </div>
-          <!-- <ng-container *ngIf="!ma.fungsi.atasan?._id"> -->
           <ng-container>
             <div *ngIf="ma.atasan as at">
               <hr class="bg-light">
@@ -57,7 +54,20 @@
             </ion-icon>
           </div>
         </div>
-      </ng-container>
+      </ng-container> -->
+      <ion-accordion-group mode="md" expand="inset" multiple="true" class="ion-no-margin" [value]="dataJabatanGroup[0].id">
+        <ion-accordion *ngFor="let fungsi of dataJabatanGroup" [value]="fungsi.id">
+          <ion-item slot="header">
+            <ion-label><b>Jabatan Fungsi {{fungsi.nama}}</b></ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <ion-item *ngFor="let jabatan of fungsi.jabatan" class="ion-no-padding">
+              <ion-label>{{ jabatan.nama }}</ion-label>
+              <ion-icon slot="end" name="chevron-forward" style="margin-right: -16px;"></ion-icon>
+            </ion-item>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
     </div>
   </div>
 
@@ -228,10 +238,10 @@
                     <div class="flex-1" style="min-width: 0;">
                       <div class="ion-text-capitalize truncate">{{ap.namaLengkap}}</div>
                       <small *ngIf="ap.fungsi as fu; else userNoFungsi">{{
-                        (ap.jabatan?.nama || '-') + ', ' + 
-                        (fu.nama || '-') + ', ' + (fu.organisasi.nama || '-') + 
+                        (ap.jabatan?.nama || '-') + ', ' +
+                        (fu.nama || '-') + ', ' + (fu.organisasi.nama || '-') +
                         (fu.organisasi?.tipe == 'wilayah'? ' - ' + fu.organisasi.zona?.nama : '')
-                      }}</small>
+                        }}</small>
                       <ng-template #userNoFungsi>
                         <small class="text-medium">Belum terdaftar pada fungsi manapun</small>
                       </ng-template>

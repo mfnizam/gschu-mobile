@@ -4,7 +4,6 @@
 
 export const environment = {
   production: false,
-  // serverUrl: 'https://mfnizam.herokuapp.com/',
   serverUrl: 'http://localhost:8080/',
   apiVersion: '0.0.1',
 };

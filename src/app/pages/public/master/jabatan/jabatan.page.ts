@@ -15,6 +15,7 @@ export class JabatanPage {
 
   loadingDataJabatan = true;
   dataJabatan: Jabatan[] = [];
+  dataJabatanGroup: { id: string, nama: string, jabatan: Jabatan[]}[] = [];
   loadingDataSelectFungsi = false;
   dataSelectFungsi: Fungsi[] = [];
   loadingDataSelectUser = false;
@@ -55,6 +56,25 @@ export class JabatanPage {
       console.log(res)
       this.loadingDataJabatan = false;
       this.dataJabatan = res.jabatan;
+
+      this.dataJabatanGroup = Object.entries(
+        res.jabatan.reduce((acc, jabatan) => {
+          if (!acc[jabatan.fungsi._id]) {
+            acc[jabatan.fungsi._id] = {
+              nama: jabatan.fungsi.nama,
+              jabatan: []
+            };
+          }
+          acc[jabatan.fungsi._id].jabatan.push(jabatan);
+          return acc;
+        }, {})).map((data: any) => {
+          return ({ id: data[0], ...data[1] })
+        }
+        ) as { id: string, nama: string, jabatan: Jabatan[]}[];
+
+        console.log(this.dataJabatanGroup);
+        
+
     }, err => {
       console.log(err)
       this.loadingDataJabatan = false;
