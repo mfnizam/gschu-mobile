@@ -33,7 +33,7 @@
             <small>Atasan telah dipilih melului data Jabatan</small>
             <hr class="bg-light">
           </div>
-          <div *ngIf="ma.atasan || ma.penyetuju; else noAtasanPenyetuju" class="grid grid-cols-2 gap-3 items-center">
+          <div *ngIf="ma.atasan || ma.penyetuju; else noAtasanPenyetuju" class="grid grid-cols-1 gap-3 items-center">
             <div *ngIf="ma.atasan as at;">
               <small class="text-medium mb-1">Atasan</small>
               <div class="flex items-center gap-3">
@@ -309,7 +309,7 @@
           <ion-title class="text-center ion-text-capitalize"><b>Pilih Penyetuju</b></ion-title>
         </ion-toolbar>
         <ion-toolbar>
-          <ion-searchbar mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
+          <ion-searchbar [formControl]="formSearch" mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
         </ion-toolbar>
       </ion-header>
       <ion-content>
@@ -377,12 +377,12 @@
                     (fu.organisasi?.tipe == 'wilayah'? ' - ' + fu.organisasi.zona?.nama : '')
                     }}</small>
                   <ng-template #userNoFungsi>
-                    <small class="text-medium">Belum terdaftar pada fungsi manapun</small>
+                    <div style="font-size: small" class="text-medium">Belum terdaftar pada fungsi manapun</div>
                   </ng-template>
                 </div>
               </div>
             </ion-label>
-            <ion-radio mode="md" slot="end" [value]="ap" class="ml-1"></ion-radio>
+            <ion-radio mode="md" slot="end" [value]="ap" class=""></ion-radio>
           </ion-item>
         </ion-radio-group>
       </div>
