@@ -342,68 +342,68 @@ export class DetailPage implements OnDestroy {
     loading.present();
 
 
-    let pdf;
+    let doc;
 
     switch (this.permintaan.kategori.kode) {
       case 'rdp':
-        pdf = this._pdf.generatePermintaanRDP(this.permintaan);
+        doc = this._pdf.generatePermintaanRDP(this.permintaan);
         break;
 
       case 'furniture':
-        pdf = this._pdf.generatePermintaanFurniture(this.permintaan);
+        doc = this._pdf.generatePermintaanFurniture(this.permintaan);
         break;
 
       case 'rumput':
-        pdf = this._pdf.generatePermintaanRumput(this.permintaan);
+        doc = this._pdf.generatePermintaanRumput(this.permintaan);
         break;
 
       case 'ac':
-        pdf = this._pdf.generatePermintaanAc(this.permintaan);
+        doc = this._pdf.generatePermintaanAc(this.permintaan);
         break;
 
       case 'atk':
-        pdf = this._pdf.generatePermintaanAtk(this.permintaan);
+        doc = this._pdf.generatePermintaanAtk(this.permintaan);
         break;
 
       case 'snack':
-        pdf = this._pdf.generatePermintaanSnack(this.permintaan);
+        doc = this._pdf.generatePermintaanSnack(this.permintaan);
         break;
 
       case 'krp':
-        pdf = this._pdf.generatePermintaanKrp(this.permintaan);
+        doc = this._pdf.generatePermintaanKrp(this.permintaan);
         break;
 
       case 'mess':
-        pdf = this._pdf.generatePermintaanMess(this.permintaan);
+        doc = this._pdf.generatePermintaanMess(this.permintaan);
         break;
 
       case 'dokumen':
-        pdf = this._pdf.generatePermintaanDokumen(this.permintaan);
+        doc = this._pdf.generatePermintaanDokumen(this.permintaan);
         break;
 
       case 'galon':
-        pdf = this._pdf.generatePermintaanGalon(this.permintaan);
+        doc = this._pdf.generatePermintaanGalon(this.permintaan);
         break;
 
       case 'acara':
-        pdf = this._pdf.generatePermintaanAcara(this.permintaan);
+        doc = this._pdf.generatePermintaanAcara(this.permintaan);
         break;
 
       case 'peralatan':
-        pdf = this._pdf.generatePermintaanPeralatan(this.permintaan);
+        doc = this._pdf.generatePermintaanPeralatan(this.permintaan);
         break;
 
       default:
         break;
     }
 
-    if (!pdf) return this.showMsg(null, 'Gagal menyimpan permintaan');
+    if (!doc) return this.showMsg(null, 'Gagal menyimpan permintaan');
 
     
     if (this._platform.is('capacitor')) {
       Filesystem.writeFile({
         path: this.permintaan.kategori.nama + "_" + new Date().getTime() + '.pdf',
-        data: pdf,
+        data: doc.output('datauristring'),
         directory: Directory.Documents,
         // encoding: Encoding.UTF8,
       })
@@ -423,7 +423,7 @@ export class DetailPage implements OnDestroy {
         });
     } else {
       loading.dismiss();
-      window.open(pdf);
+      window.open(doc.output('bloburl'));
     }
 
   }

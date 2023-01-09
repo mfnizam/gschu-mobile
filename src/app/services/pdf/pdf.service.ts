@@ -123,7 +123,7 @@ export class PdfService {
       }
     })
 
-    return doc.output('datauristring')
+    return doc
     // return doc.output('dataurlnewwindow')
   }
 
