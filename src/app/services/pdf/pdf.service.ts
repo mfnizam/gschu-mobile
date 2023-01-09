@@ -16,8 +16,11 @@ export class PdfService {
   ) { }
 
   // TODO: Move to helper
-  generate(body: UserOptions['body'], nested?: { table: UserOptions, cellTitle: string }[]) {
+  generate(title: string, body: UserOptions['body'], nested?: { table: UserOptions, cellTitle: string }[]) {
     const doc = new jsPDF({ format: 'a4' });
+    doc.setProperties({
+      title
+    })
     const width = doc.internal.pageSize.getWidth();
     const height = doc.internal.pageSize.getHeight();
 
@@ -117,7 +120,7 @@ export class PdfService {
       ['', { content: 'PT PERTAMINA HULU ROKAN ZONA 1', colSpan: 3 }, '', '', ''],
       ['', '', '', '', '', '', ''],
       ['', 'No. Surat', ':', { content: permintaan.noSurat, colSpan: 3 }, ''],
-      ['', 'Tanggal', ':', { content: new Date(permintaan.tglPermintaan).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
+      ['', 'Tanggal', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', 'Kepada', ':', { content: 'SCM ' + permintaan.user.fungsi.organisasi.nama, colSpan: 3 }, ''], // ganti kata scm sesuai data wilayah kerja
       ['', 'Dari', ':', { content: permintaan.user.fungsi.nama, colSpan: 3 }, ''],
       [{ content: '', colSpan: 7, title: 'linebottom' }],
@@ -143,8 +146,9 @@ export class PdfService {
 
   generatePermintaanRDP(permintaan) {
     let alamat = permintaan.permintaan.alamat
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Alamat RDP/Fasum', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', 'Jenis Kerusakan', ':', { content: permintaan.permintaan.perbaikan.map(v => v.jenis).join(','), colSpan: 3 }, ''],
       ['', 'Harapan Tgl Perbaikan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
@@ -154,7 +158,7 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanFurniture(permintaan) {
@@ -173,8 +177,9 @@ export class PdfService {
       }
     }
     let alamat = permintaan.permintaan.alamat;
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Alamat Pengiriman', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', { content: '', title: 'furniture', colSpan: 5 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
@@ -186,6 +191,7 @@ export class PdfService {
     let footer = this.generatePermintaanFooter(permintaan);
 
     return this.generate(
+      perihal,
       [...header, ...content, ...footer],
       [
         { table: tableFurniture, cellTitle: 'furniture' },
@@ -196,8 +202,9 @@ export class PdfService {
     let alamat = permintaan.permintaan.pemotongan.map((v, i, a) => {
       return (a.length > 1 ? (i + 1) + ". " : '') + v.lokasi[0].toUpperCase() + v.lokasi.substring(1)
     })
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Lokasi Pohon/Rumput', ':', { content: alamat.join('\n\n'), colSpan: 3 }, ''],
       ['', 'Harapan Tgl Pemotongan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
@@ -206,7 +213,7 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanAc(permintaan) {
@@ -214,8 +221,9 @@ export class PdfService {
       return (a.length > 1 ? (i + 1) + ". " : '') + v.jenis
     })
     let alamat = permintaan.permintaan.alamat;
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Lokasi AC', ':', { content: (alamat[0].toUpperCase() + alamat.substring(1)), colSpan: 3 }, ''],
       ['', 'Kerusakan', ':', { content: kerusakan.join('\n\n'), colSpan: 3 }, ''],
       ['', 'Harapan Tgl Pemotongan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
@@ -225,7 +233,7 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanAtk(permintaan) {
@@ -244,8 +252,9 @@ export class PdfService {
       }
     }
     let alamat = permintaan.permintaan.alamat;
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Lokasi Kerja', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', { content: '', title: 'atk', colSpan: 5 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
@@ -257,6 +266,7 @@ export class PdfService {
     let footer = this.generatePermintaanFooter(permintaan);
 
     return this.generate(
+      perihal,
       [...header, ...content, ...footer],
       [
         { table: tableFurniture, cellTitle: 'atk' },
@@ -283,14 +293,15 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanKrp(permintaan) {
     let tempatPenjemputan = permintaan.permintaan.tempatPenjemputan
     let tempatTujuan = permintaan.permintaan.tempatTujuan
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.permintaan.perihal, colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Tanggal Keberangkatan', ':', { content: new Date(permintaan.permintaan.tglKeberangkatan).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', 'Tanggal Kembali', ':', { content: new Date(permintaan.permintaan.tglKembali).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', 'Tempat Penjemputan', ':', { content: tempatPenjemputan[0].toUpperCase() + tempatPenjemputan.substring(1), colSpan: 3 }, ''],
@@ -304,12 +315,13 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanMess(permintaan) {
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.permintaan.perihal, colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Nama Tamu', ':', { content: permintaan.permintaan.penanggungJawab, colSpan: 3 }, ''],
       ['', 'Jumlah Tamu', ':', { content: permintaan.permintaan.jumlahTamu + ' Orang', colSpan: 3 }, ''],
       ['', 'Jumlah Kamar', ':', { content: permintaan.permintaan.jumlahKamar + ' Kamar', colSpan: 3 }, ''],
@@ -321,14 +333,15 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanDokumen(permintaan) {
     let alamatPengirim = permintaan.permintaan.alamatPengirim
     let alamatPenerima = permintaan.permintaan.alamatPenerima
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.permintaan.perihal, colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Nama Pengirim', ':', { content: permintaan.permintaan.namaPengirim, colSpan: 3 }, ''],
       ['', 'Alamat Pengirim', ':', { content: alamatPengirim[0].toUpperCase() + alamatPengirim.substring(1), colSpan: 3 }, ''],
       ['', 'No Tlp Pengirim', ':', { content: permintaan.permintaan.noTlpPengirim, colSpan: 3 }, ''],
@@ -341,13 +354,14 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanGalon(permintaan) {
     let lokasi = permintaan.permintaan.lokasi
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.permintaan.perihal, colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Jumlah Galon', ':', { content: permintaan.permintaan.jumlah, colSpan: 3 }, ''],
       ['', 'Lokasi', ':', { content: lokasi[0].toUpperCase() + lokasi.substring(1), colSpan: 3 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
@@ -359,7 +373,7 @@ export class PdfService {
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
 
-    return this.generate([...header, ...content, ...footer]);
+    return this.generate(perihal, [...header, ...content, ...footer]);
   }
 
   generatePermintaanAcara(permintaan) {
@@ -382,8 +396,9 @@ export class PdfService {
       }
     }
     let tempat = permintaan.permintaan.tempat;
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Nama Acara', ':', { content: permintaan.permintaan.nama, colSpan: 3 }, ''],
       ['', 'Jenis Acara', ':', { content: this._capitalize.transform(permintaan.permintaan.jenis), colSpan: 3 }, ''],
       ['', 'Cost Center', ':', { content: permintaan.permintaan.costCenter, colSpan: 3 }, ''],
@@ -403,6 +418,7 @@ export class PdfService {
     let footer = this.generatePermintaanFooter(permintaan);
 
     return this.generate(
+      perihal,
       [...header, ...content, ...footer],
       [
         { table: tableKebutuhan, cellTitle: 'kebutuhan' },
@@ -430,8 +446,9 @@ export class PdfService {
       }
     }
     let alamat = permintaan.permintaan.alamat;
+    let perihal = 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, '')
     let content = [
-      ['', 'Perihal', ':', { content: 'Permintaan ' + permintaan.kategori.nama.replace(/[\r\n]/gm, ''), colSpan: 3 }, ''],
+      ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Lokasi Kerja', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', { content: '', title: 'peralatan', colSpan: 5 }, ''],
@@ -443,6 +460,7 @@ export class PdfService {
     let footer = this.generatePermintaanFooter(permintaan);
 
     return this.generate(
+      perihal,
       [...header, ...content, ...footer],
       [
         { table: tablePeralatan, cellTitle: 'peralatan' },
