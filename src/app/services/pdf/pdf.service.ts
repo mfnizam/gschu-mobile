@@ -14,12 +14,13 @@ export class PdfService {
   constructor(
     private _capitalize: TitleCasePipe
   ) { }
-
+  
+  height = 0;
   // TODO: Move to helper
   generate(title: string, body: UserOptions['body'], nested?: { table: UserOptions, cellTitle: string }[]) {
     const doc = new jsPDF({ format: 'a4' });
     doc.setProperties({
-      title
+      title,
     })
     const width = doc.internal.pageSize.getWidth();
     const height = doc.internal.pageSize.getHeight();
@@ -55,18 +56,30 @@ export class PdfService {
       willDrawCell: (data) => {
         data.doc.setDrawColor("#000");
 
+        // let title = data.row.raw[data.column.index]?.title;
+        // let nestedOption = nested?.find(v => v.cellTitle.includes(title));
+        // if (nestedOption) {
+        //   data.doc.line(data.settings.margin.left, data.cell.y, width - data.settings.margin.left, data.cell.y)
+        // };
+
         // TODO: sementara hanya bisa handle 2 halaman. 
-        if (data.row.index === 25 && data.cell.y >= 121) {
+        if (data.row.index === data.table.body.length - 7 && data.cell.y >= 200) {
           data.row.height = height - data.cell.y - 10;
           data.doc.line(data.cell.x, data.cell.y + data.row.height, data.cell.x + data.cell.width, data.cell.y + data.row.height);
         }
-        if (data.row.index === 26 && data.pageNumber > 1) {
+        if (data.row.index === data.table.body.length - 6 && data.pageNumber > 1) {
           data.doc.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y)
         };
+
+        // if (data.row.index > data.table.body.length - 7 && data.column.index == 0) {
+        //   data.cell.text = [data.row.index + '', ...data.cell.text]
+        //   this.height += data.cell.height
+        //   console.log(this.height, height, data.cell.y, data.cell.height)
+        // }
       },
       didDrawCell: (data) => {
         data.doc.setDrawColor("#000");
-
+        
         let title = data.row.raw[data.column.index]?.title;
 
         let nestedOption = nested?.find(v => v.cellTitle.includes(title));
@@ -110,7 +123,8 @@ export class PdfService {
       }
     })
 
-    return doc.output('bloburl')
+    return doc.output('datauristring')
+    // return doc.output('dataurlnewwindow')
   }
 
   generatePermintaanHeader(permintaan): UserOptions['body'] {
@@ -152,7 +166,7 @@ export class PdfService {
       ['', 'Alamat RDP/Fasum', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', 'Jenis Kerusakan', ':', { content: permintaan.permintaan.perbaikan.map(v => v.jenis).join(','), colSpan: 3 }, ''],
       ['', 'Harapan Tgl Perbaikan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -183,7 +197,7 @@ export class PdfService {
       ['', 'Alamat Pengiriman', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', { content: '', title: 'furniture', colSpan: 5 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
 
@@ -207,7 +221,7 @@ export class PdfService {
       ['', 'Perihal', ':', { content: perihal, colSpan: 3 }, ''],
       ['', 'Lokasi Pohon/Rumput', ':', { content: alamat.join('\n\n'), colSpan: 3 }, ''],
       ['', 'Harapan Tgl Pemotongan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -227,7 +241,7 @@ export class PdfService {
       ['', 'Lokasi AC', ':', { content: (alamat[0].toUpperCase() + alamat.substring(1)), colSpan: 3 }, ''],
       ['', 'Kerusakan', ':', { content: kerusakan.join('\n\n'), colSpan: 3 }, ''],
       ['', 'Harapan Tgl Pemotongan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -258,7 +272,7 @@ export class PdfService {
       ['', 'Lokasi Kerja', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', { content: '', title: 'atk', colSpan: 5 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
 
@@ -287,7 +301,7 @@ export class PdfService {
       ['', 'Cost Center', ':', { content: permintaan.permintaan.costCenter, colSpan: 3 }, ''],
       ['', 'Cost Center', ':', { content: permintaan.permintaan.GLAccount, colSpan: 3 }, ''],
       ['', 'PIC Kegiatan', ':', { content: permintaan.permintaan.pic, colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -309,7 +323,7 @@ export class PdfService {
       ['', 'Waktu Penjemputan', ':', { content: new Date(permintaan.permintaan.waktuPenjemputan).toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' }), colSpan: 3 }, ''],
       ['', 'Jenis Pelayanan', ':', { content: this._capitalize.transform(permintaan.permintaan.jenisPelayanan), colSpan: 3 }, ''],
       ['', 'Jumlah Penumpang', ':', { content: permintaan.permintaan.jumlahPenumpang, colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -327,7 +341,7 @@ export class PdfService {
       ['', 'Jumlah Kamar', ':', { content: permintaan.permintaan.jumlahKamar + ' Kamar', colSpan: 3 }, ''],
       ['', 'Tgl Check-in', ':', { content: new Date(permintaan.permintaan.checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', 'Tgl Check-out', ':', { content: new Date(permintaan.permintaan.checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -349,7 +363,7 @@ export class PdfService {
       ['', 'Alamat Penerima', ':', { content: alamatPenerima[0].toUpperCase() + alamatPenerima.substring(1), colSpan: 3 }, ''],
       ['', 'No Tlp Penerima', ':', { content: permintaan.permintaan.noTlpPenerima, colSpan: 3 }, ''],
       ['', 'Jenis Dokumen', ':', { content: permintaan.permintaan.jenisDokumen, colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
     ];
     let header = this.generatePermintaanHeader(permintaan);
     let footer = this.generatePermintaanFooter(permintaan);
@@ -367,7 +381,7 @@ export class PdfService {
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', 'Waktu Pengambilan', ':', { content: new Date(permintaan.permintaan.waktu).toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' }), colSpan: 3 }, ''],
       ['', 'Penis Pelayanan', ':', { content: this._capitalize.transform(permintaan.permintaan.jenisPelayanan), colSpan: 3 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No HP', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
     let header = this.generatePermintaanHeader(permintaan);
@@ -410,7 +424,7 @@ export class PdfService {
       ['', 'PIC Acara', ':', { content: permintaan.permintaan.pic, colSpan: 3 }, ''],
       ['', 'No Tlp PIC', ':', { content: permintaan.permintaan.noTlpPic, colSpan: 3 }, ''],
       ['', { content: '', title: 'kebutuhan', colSpan: 5 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No Tlp Requester', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
 
@@ -452,7 +466,7 @@ export class PdfService {
       ['', 'Lokasi Kerja', ':', { content: alamat[0].toUpperCase() + alamat.substring(1), colSpan: 3 }, ''],
       ['', 'Tgl Diperlukan', ':', { content: new Date(permintaan.permintaan.tgl).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), colSpan: 3 }, ''],
       ['', { content: '', title: 'peralatan', colSpan: 5 }, ''],
-      ['', 'Catatan', ':', { content: permintaan.permintaan.catatan, colSpan: 3 }, ''],
+      ['', 'Catatan', ':', { content: permintaan.permintaan?.catatan, colSpan: 3 }, ''],
       ['', 'No Tlp Requester', ':', { content: permintaan.user.kodeNoTlp + permintaan.user.noTlp, colSpan: 3 }, '']
     ];
 

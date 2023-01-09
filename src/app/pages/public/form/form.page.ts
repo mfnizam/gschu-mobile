@@ -377,7 +377,7 @@ export class FormPage implements OnDestroy {
 
 
     let value = JSON.parse(JSON.stringify(this.permintaanForm.value));
-    value.catatan = value.catatan.replace(/\n+$/, "");
+    if(value.catatan) value.catatan = value.catatan?.replace(/\n+$/, "");
     let variasiFormData = new FormData();
     if (value.variasi) {
       for (var i = 0; i < value.variasi.length; i++) {

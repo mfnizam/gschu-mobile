@@ -1,7 +1,12 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import {
+  AlertController,
+  LoadingController,
+  Platform,
+  ToastController,
+} from '@ionic/angular';
 import { User, UserService } from 'app/services/user/user.service';
 import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
@@ -10,7 +15,7 @@ import { BerandaService, Kategori } from '../beranda/beranda.service';
 import { PersetujuanService } from '../persetujuan/persetujuan.service';
 import { PermintaanService } from '../permintaan/permintaan.service';
 import { PdfService } from 'app/services/pdf/pdf.service';
-import { TitleCasePipe } from '@angular/common';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 /* 
   TODO:
     - optimasi halaman detail
@@ -21,7 +26,7 @@ import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-detail',
-  templateUrl: './detail.page.html'
+  templateUrl: './detail.page.html',
 })
 export class DetailPage implements OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -30,7 +35,7 @@ export class DetailPage implements OnDestroy {
 
   idPermintaan;
   jenisPermintaan;
-  permintaan/* : Permintaan */;
+  permintaan /* : Permintaan */;
 
   isLoading = true;
   toast;
@@ -50,70 +55,74 @@ export class DetailPage implements OnDestroy {
     private _toast: ToastController,
     private _loading: LoadingController,
     private _alert: AlertController,
-    private _pdf: PdfService
+    private _pdf: PdfService,
+    private _platform: Platform
   ) {
     this._route.params
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(params => {
+      .subscribe((params) => {
         this.idPermintaan = params.id;
         this.jenisPermintaan = params.jenis;
-        console.log(this.jenisPermintaan)
-      })
+        console.log(this.jenisPermintaan);
+      });
 
-    this._user.user$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(user => {
-        this.user = user;
-      })
+    this._user.user$.pipe(takeUntil(this._unsubscribeAll)).subscribe((user) => {
+      this.user = user;
+    });
   }
 
   ionViewDidEnter() {
     this.ambilPermintaan();
     let skeleton = document.getElementById('loading-detail');
-    if (skeleton) skeleton.classList.add('skeleton')
+    if (skeleton) skeleton.classList.add('skeleton');
   }
 
   ambilPermintaan(refresher?, loading = true, hanyattd = false) {
     this.isLoading = loading;
     if (this.jenisPermintaan == 'permintaan') {
-      this._permintaan.detail(this.idPermintaan)
-        .subscribe(res => {
-          console.log(res)
+      this._permintaan.detail(this.idPermintaan).subscribe(
+        (res) => {
+          console.log(res);
           this.isLoading = false;
           if (refresher) refresher.target.complete();
-          if (res.permintaan) this.prosesPermintaan(res.permintaan, hanyattd)
-        }, err => {
+          if (res.permintaan) this.prosesPermintaan(res.permintaan, hanyattd);
+        },
+        (err) => {
           if (refresher) refresher.target.complete();
-          this.showMsg(err)
-        })
+          this.showMsg(err);
+        }
+      );
     } else if (this.jenisPermintaan == 'persetujuan') {
-      this._persetujuan.detail(this.idPermintaan)
-        .subscribe(res => {
-          console.log(res)
+      this._persetujuan.detail(this.idPermintaan).subscribe(
+        (res) => {
+          console.log(res);
           this.isLoading = false;
           if (refresher) refresher.target.complete();
-          if (res.permintaan) this.prosesPermintaan(res.permintaan, hanyattd)
-        }, err => {
+          if (res.permintaan) this.prosesPermintaan(res.permintaan, hanyattd);
+        },
+        (err) => {
           if (refresher) refresher.target.complete();
-          this.showMsg(err)
-        })
+          this.showMsg(err);
+        }
+      );
     }
   }
 
   prosesPermintaan(permintaan, hanyattd) {
     if (!hanyattd || !this.permintaan) {
-      this.permintaan = permintaan
+      this.permintaan = permintaan;
       // this.permintaan.nama = this._beranda._kategori.find(v => v.kode == permintaan?.kategori)?.nama;
 
       // this.permintaan.user['inisial'] = this.getInitial(permintaan.user.namaLengkap);
-      if (this.permintaan.user.foto) this.permintaan.user['foto'] = permintaan.user.foto;
+      if (this.permintaan.user.foto)
+        this.permintaan.user['foto'] = permintaan.user.foto;
     } else {
-      this.permintaan.diketahui = permintaan.diketahui
-      this.permintaan.disetujui = permintaan.disetujui
-      this.permintaan.selesai = permintaan.selesai
+      this.permintaan.diketahui = permintaan.diketahui;
+      this.permintaan.disetujui = permintaan.disetujui;
+      this.permintaan.selesai = permintaan.selesai;
     }
 
-    this.permintaan.status = this._permintaan.setStatus(permintaan)
+    this.permintaan.status = this._permintaan.setStatus(permintaan);
 
     // let diketahui = this.permintaan.diketahui
     // if (diketahui?.oleh) diketahui.oleh['inisial'] = this.getInitial(diketahui.oleh.namaLengkap)
@@ -122,7 +131,6 @@ export class DetailPage implements OnDestroy {
     // let disetujui = this.permintaan.disetujui
     // if (disetujui?.oleh) disetujui.oleh['inisial'] = this.getInitial(disetujui.oleh.namaLengkap)
     // if (disetujui?.oleh?.foto) disetujui.oleh['foto'] = disetujui.oleh.foto;
-
 
     // if (this.permintaan.kategori == 'snack') {
     //   let perihal = this.permintaan.permintaan.perihal
@@ -134,7 +142,11 @@ export class DetailPage implements OnDestroy {
   //   return nama.match(/(^\S\S?|\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase()
   // }
 
-  async showMsg(err, msg = 'Gagal memuat data permintaan. Coba beberapa saat lagi', color = 'danger') {
+  async showMsg(
+    err,
+    msg = 'Gagal memuat data permintaan. Coba beberapa saat lagi',
+    color = 'danger'
+  ) {
     //console.log(err)
     this.isLoading = false;
 
@@ -144,7 +156,7 @@ export class DetailPage implements OnDestroy {
       duration: 3000,
       color,
       mode: 'ios',
-      buttons: [{ icon: 'close' }]
+      buttons: [{ icon: 'close' }],
     });
     this.toast.present();
   }
@@ -155,37 +167,48 @@ export class DetailPage implements OnDestroy {
   }
 
   async tolak(modal) {
-    if (!this.catatanTolak) return this.showMsg(null, 'Harap isi catatan', 'danger')
+    if (!this.catatanTolak)
+      return this.showMsg(null, 'Harap isi catatan', 'danger');
     let loading = await this._loading.create({
       message: 'Memproses penolakan permintaan. Mohon tunggu...',
       mode: 'ios',
       backdropDismiss: false,
-      duration: 60000
-    })
+      duration: 60000,
+    });
     modal.dismiss();
     loading.present();
 
-    this._persetujuan.tolak(this.idPermintaan, this.catatanTolak)
-      .subscribe(res => {
-        console.log(res)
+    this._persetujuan.tolak(this.idPermintaan, this.catatanTolak).subscribe(
+      (res) => {
+        console.log(res);
         loading.dismiss();
-        if (!res) return this.showMsg(null, 'Gagal menolak permintaan. Coba beberapa saat lagi.')
+        if (!res)
+          return this.showMsg(
+            null,
+            'Gagal menolak permintaan. Coba beberapa saat lagi.'
+          );
         this.ambilPermintaan(null, false, true);
-        this.showMsg(null, 'Berhasil menolak permintaan.', 'success')
-      }, err => {
+        this.showMsg(null, 'Berhasil menolak permintaan.', 'success');
+      },
+      (err) => {
         loading.dismiss();
         //console.log(err)
-        this.showMsg(err, 'Gagal menolak permintaan. Coba beberapa saat lagi.')
-      })
+        this.showMsg(err, 'Gagal menolak permintaan. Coba beberapa saat lagi.');
+      }
+    );
   }
 
   async openSetujuTolakModal(modal) {
-    if (this.permintaan.diketahui.oleh && this.permintaan.disetujui.oleh._id == this.user._id && this.permintaan.diketahui.status !== 1) {
+    if (
+      this.permintaan.diketahui.oleh &&
+      this.permintaan.disetujui.oleh._id == this.user._id &&
+      this.permintaan.diketahui.status !== 1
+    ) {
       let permitedAlert = await this._alert.create({
         message: 'Permintaan ini ditolak / belum disetujui atasan.',
         mode: 'ios',
-        buttons: [{ text: 'Tutup' }]
-      })
+        buttons: [{ text: 'Tutup' }],
+      });
       permitedAlert.present();
       return;
     }
@@ -197,23 +220,32 @@ export class DetailPage implements OnDestroy {
       message: 'Memproses persetujuan permintaan. Mohon tunggu...',
       mode: 'ios',
       backdropDismiss: false,
-      duration: 60000
-    })
+      duration: 60000,
+    });
     modal.dismiss();
     loading.present();
 
-    this._persetujuan.setuju(this.idPermintaan)
-      .subscribe(res => {
-        console.log(res)
+    this._persetujuan.setuju(this.idPermintaan).subscribe(
+      (res) => {
+        console.log(res);
         loading.dismiss();
-        if (!res) return this.showMsg(null, 'Gagal menyetujui permintaan. Coba beberapa saat lagi.')
+        if (!res)
+          return this.showMsg(
+            null,
+            'Gagal menyetujui permintaan. Coba beberapa saat lagi.'
+          );
         this.ambilPermintaan(null, false, true);
-        this.showMsg(null, 'Berhasil menyetujui permintaan.', 'success')
-      }, err => {
+        this.showMsg(null, 'Berhasil menyetujui permintaan.', 'success');
+      },
+      (err) => {
         loading.dismiss();
         //console.log(err)
-        this.showMsg(err, 'Gagal menyetujui permintaan. Coba beberapa saat lagi.')
-      })
+        this.showMsg(
+          err,
+          'Gagal menyetujui permintaan. Coba beberapa saat lagi.'
+        );
+      }
+    );
   }
 
   async selesai(id) {
@@ -221,8 +253,11 @@ export class DetailPage implements OnDestroy {
       header: 'Konfirmasi Permintaan Telah Diselesaikan',
       mode: 'ios',
       cssClass: 'item-' + this.permintaan.kategori.kode,
-      buttons: [{ text: 'Batal', role: 'cancel' }, { text: 'Selesai', role: 'ok' }]
-    })
+      buttons: [
+        { text: 'Batal', role: 'cancel' },
+        { text: 'Selesai', role: 'ok' },
+      ],
+    });
     await alert.present();
     let { role } = await alert.onDidDismiss();
     if (role != 'ok') return;
@@ -231,23 +266,32 @@ export class DetailPage implements OnDestroy {
       message: 'Memproses penyelesaian permintaan. Mohon tunggu...',
       mode: 'ios',
       backdropDismiss: false,
-      duration: 60000
-    })
+      duration: 60000,
+    });
     // modal.dismiss();
     loading.present();
 
-    this._persetujuan.selesai(id)
-      .subscribe(res => {
-        console.log(res)
+    this._persetujuan.selesai(id).subscribe(
+      (res) => {
+        console.log(res);
         loading.dismiss();
-        if (!res) return this.showMsg(null, 'Gagal menyelesaikan permintaan. Coba beberapa saat lagi.')
+        if (!res)
+          return this.showMsg(
+            null,
+            'Gagal menyelesaikan permintaan. Coba beberapa saat lagi.'
+          );
         this.ambilPermintaan(null, false, true);
-        this.showMsg(null, 'Berhasil menyelesaikan permintaan.', 'success')
-      }, err => {
+        this.showMsg(null, 'Berhasil menyelesaikan permintaan.', 'success');
+      },
+      (err) => {
         loading.dismiss();
         //console.log(err)
-        this.showMsg(err, 'Gagal menyelesaikan permintaan. Coba beberapa saat lagi.')
-      })
+        this.showMsg(
+          err,
+          'Gagal menyelesaikan permintaan. Coba beberapa saat lagi.'
+        );
+      }
+    );
   }
 
   async selesaiPemohon(modal) {
@@ -255,20 +299,27 @@ export class DetailPage implements OnDestroy {
       message: 'Memproses konfirmasi. Mohon tunggu...',
       mode: 'ios',
       backdropDismiss: false,
-      duration: 60000
-    })
+      duration: 60000,
+    });
     modal.dismiss();
     loading.present();
-    this._permintaan.selesaiPemohon(this.permintaan._id, this.namaPenerima)
-      .subscribe(res => {
-        console.log(res)
-        loading.dismiss();
-        this.ambilPermintaan();
-      }, err => {
-        console.log(err)
-        loading.dismiss();
-        this.showMsg(err, 'Gagal konfirmasi selesai permintaan. Coba beberapa saat lagi.')
-      })
+    this._permintaan
+      .selesaiPemohon(this.permintaan._id, this.namaPenerima)
+      .subscribe(
+        (res) => {
+          console.log(res);
+          loading.dismiss();
+          this.ambilPermintaan();
+        },
+        (err) => {
+          console.log(err);
+          loading.dismiss();
+          this.showMsg(
+            err,
+            'Gagal konfirmasi selesai permintaan. Coba beberapa saat lagi.'
+          );
+        }
+      );
   }
 
   async openUlasan(ulasan) {
@@ -276,12 +327,21 @@ export class DetailPage implements OnDestroy {
       header: 'Ulasan Permintaan',
       message: ulasan,
       mode: 'ios',
-      buttons: [{ text: 'Tutup', role: 'cancel' }]
-    })
+      buttons: [{ text: 'Tutup', role: 'cancel' }],
+    });
     alert.present();
   }
-
+  
   async cetakPermintaan() {
+    let loading = await this._loading.create({
+      message: 'Menyimpan permintaan (PDF). Mohon tunggu...',
+      mode: 'ios',
+      backdropDismiss: false,
+      duration: 60000,
+    });
+    loading.present();
+
+
     let pdf;
 
     switch (this.permintaan.kategori.kode) {
@@ -337,6 +397,34 @@ export class DetailPage implements OnDestroy {
         break;
     }
 
-    if (pdf) window.open(pdf);
+    if (!pdf) return this.showMsg(null, 'Gagal menyimpan permintaan');
+
+    
+    if (this._platform.is('capacitor')) {
+      Filesystem.writeFile({
+        path: this.permintaan.kategori.nama + "_" + new Date().getTime() + '.pdf',
+        data: pdf,
+        directory: Directory.Documents,
+        // encoding: Encoding.UTF8,
+      })
+        .then(() => {
+          setTimeout(() => {
+            loading.dismiss();
+            this.showMsg(
+              null,
+              'Berhasil menyimpan permintaan pada folder Dokumen',
+              'success'
+            );
+          }, 2000)
+        })
+        .catch((error) => {
+          loading.dismiss();
+          this.showMsg(null, 'Gagal menyimpan permintaan');
+        });
+    } else {
+      loading.dismiss();
+      window.open(pdf);
+    }
+
   }
 }

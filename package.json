@@ -27,6 +27,7 @@
     "@capacitor/app": "4.0.1",
     "@capacitor/camera": "^4.0.1",
     "@capacitor/core": "4.0.1",
+    "@capacitor/filesystem": "^4.1.4",
     "@capacitor/haptics": "4.0.1",
     "@capacitor/keyboard": "4.0.1",
     "@capacitor/local-notifications": "^4.1.3",

@@ -6,11 +6,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormPage } from './form.page';
 import { FormGuard } from 'app/services/auth/auth.guard';
 
-const routes: Routes = [{ 
-  path: '', component: FormPage, canActivate: [FormGuard] 
-}, {
-  path: ':id', component: FormPage, canActivate: [FormGuard] 
-}];
+// const routes: Routes = [{ 
+//   path: '', component: FormPage, canActivate: [FormGuard] 
+// }, {
+//   path: ':id', component: FormPage, canActivate: [FormGuard]
+// }];
 
 @NgModule({
   imports: [
@@ -18,7 +18,7 @@ const routes: Routes = [{
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    // RouterModule.forChild(routes)
   ],
   declarations: [FormPage]
 })
