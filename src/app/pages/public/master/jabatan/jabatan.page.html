@@ -61,7 +61,7 @@
             <ion-label><b>Jabatan Fungsi {{fungsi.nama}}</b></ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
-            <ion-item *ngFor="let jabatan of fungsi.jabatan" class="ion-no-padding">
+            <ion-item *ngFor="let jabatan of fungsi.jabatan" class="ion-no-padding" (click)="itemAction(modalItemAction, jabatan._id)">
               <ion-label>{{ jabatan.nama }}</ion-label>
               <ion-icon slot="end" name="chevron-forward" style="margin-right: -16px;"></ion-icon>
             </ion-item>
@@ -219,7 +219,7 @@
           <ion-title class="text-center ion-text-capitalize"><b>Pilih Atasan</b></ion-title>
         </ion-toolbar>
         <ion-toolbar>
-          <ion-searchbar mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
+          <ion-searchbar [formControl]="formSearch" mode="ios" class="ion-padding-start ion-padding-end searchbar-custom"></ion-searchbar>
         </ion-toolbar>
       </ion-header>
       <ion-content>

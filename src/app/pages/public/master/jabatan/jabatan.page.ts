@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { User } from 'app/services/user/user.service';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { FungsiService } from '../fungsi/fungsi.service';
 import { Fungsi } from '../fungsi/fungsi.types';
 import { JabatanService } from './jabatan.service';
@@ -31,6 +33,9 @@ export class JabatanPage {
     dataAtasan: [null],
   })
   loadingCreateUpdateJabatan = false;
+  
+  formSearch: FormControl = this.formBuilder.control('');
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   idItemAction: string;
 
@@ -47,6 +52,33 @@ export class JabatanPage {
 
   ionViewDidEnter(){
     this.getJabatan()
+
+    this.formSearch.valueChanges
+      .pipe(takeUntil(this._unsubscribeAll), debounceTime(200))
+      .subscribe((value) => {
+        this.loadingDataSelectUser = true;
+        this.fungsi
+          .getUser({
+            ...(value ? { namaLengkap: { $regex: value, $options: 'i' } } : {}),
+          })
+          .subscribe(
+            (res) => {
+              console.log(res);
+              this.loadingDataSelectUser = false;
+              this.dataSelectUser = res.user;
+            },
+            (err) => {
+              console.log(err);
+              this.loadingDataSelectUser = false;
+            }
+          );
+        // this.dataSelectUser = this.dataSelectUser.filter(user => user.namaLengkap.includes(value))
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   }
 
   getJabatan(){
