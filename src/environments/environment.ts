@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  serverUrl: 'http://localhost:8080/',
-  // serverUrl: 'https://gschu-app.et.r.appspot.com/',
+  // serverUrl: 'http://localhost:8080/',
+  serverUrl: 'https://gschu-app.et.r.appspot.com/',
   apiVersion: '0.0.1',
 };
 

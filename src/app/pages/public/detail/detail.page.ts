@@ -200,9 +200,9 @@ export class DetailPage implements OnDestroy {
 
   async openSetujuTolakModal(modal) {
     if (
-      this.permintaan.diketahui.oleh &&
-      this.permintaan.disetujui.oleh._id == this.user._id &&
-      this.permintaan.diketahui.status !== 1
+      !this.permintaan.diketahui.disabled &&
+      this.permintaan.diketahui.status !== 1 &&
+      this.permintaan.disetujui.oleh._id == this.user._id
     ) {
       let permitedAlert = await this._alert.create({
         message: 'Permintaan ini ditolak / belum disetujui atasan.',
