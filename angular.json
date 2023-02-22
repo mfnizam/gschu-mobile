@@ -33,8 +33,7 @@
             ],
             "styles": [
               "src/global.scss", 
-              "src/theme/variables.scss", 
-              "src/theme/custom.scss"
+              "src/theme/variables.scss"
             ],
             "scripts": [],
             "aot": false,
